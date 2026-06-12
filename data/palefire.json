@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "audioLayers": [
+    {
+      "id": "c881ddf9-b363-465a-85d0-fe9a15c9cbd7",
+      "name": "Sea waves stormy.wav",
+      "filePath": "data/audio/Sea waves stormy.wav",
+      "volume": 0.7,
+      "enabled": true
+    }
+  ]
+}
