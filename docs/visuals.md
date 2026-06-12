@@ -3,9 +3,8 @@
 Palefire works fully without bitmap art: campaigns and scenes without images get a
 deterministic night-sea gradient (see `src/components/cover.ts`), and the app icon is
 generated procedurally. If you want real artwork, generate the images below and import
-them through the app (campaign editor → cover image, scene editor → background image) —
-imported files are copied into `%APPDATA%/com.palefire.app/images/` automatically, so
-there is no need to place files in the repo.
+them through the app (campaign editor → cover image, scene editor → background image).
+Imported files are copied directly into `data/images/` and become ordinary Git changes.
 
 A consistent prompt style keeps the app feeling handcrafted. Shared style suffix for
 all prompts:

@@ -6,9 +6,10 @@
 
 - `src/db/repo.ts` owns SQL access.
 - `src/audio/engine.ts` is the singleton Web Audio mixer and crossfade engine.
+- `src/projectPaths.ts` reads the repository data paths exposed by the Rust shell.
 - `src/stores/` contains the Zustand app, data, and audio stores.
 - `src/views/` contains one module per sidebar view.
-- `src/db/seed.ts` contains The Night Ferry example campaign.
+- `src/db/seed.ts` contains the Nox Trajectus campaign.
 
 ## Windows environment
 
@@ -20,9 +21,27 @@ $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
 
 `Cargo.lock` pins `time = 0.3.47` because `time = 0.3.48` conflicts with `cookie = 0.18.1`. Do not update it until the upstream dependency chain is fixed.
 
-## Database and migrations
+## Repository data
 
-The development database is `%APPDATA%\com.palefire.app\palefire.db`, with adjacent `-wal` and `-shm` files. Remove all three when a full reseed is intentionally required.
+Palefire reads and writes its working data directly in the clone:
+
+- `data/palefire.db`
+- `data/images/`
+- `data/audio/`
+
+`src-tauri/src/lib.rs` derives the absolute `data/` path from `CARGO_MANIFEST_DIR`,
+registers migrations against that database URL, exposes the paths through the
+`project_paths` command, and grants the filesystem and asset-protocol scopes at runtime.
+A clone must be rebuilt if it is moved to another path after compilation.
+
+SQLite may create `palefire.db-wal` and `palefire.db-shm` beside the database while the
+app is open. They are ignored by Git. Close Palefire before pulling, committing, or
+pushing so all changes are checkpointed into `palefire.db`.
+
+Because SQLite is a binary file, Git cannot merge campaign edits made independently on
+two PCs. Pull before a session and push after it rather than running divergent copies.
+
+## Database and migrations
 
 `tauri-plugin-sql` checksums migration SQL. Never edit a released migration; add a new numbered migration. Keep both protections against Windows line-ending changes:
 
@@ -49,4 +68,4 @@ WebView2 permits the AudioContext to run without a user gesture in this setup, s
 ## Behavioral invariants
 
 - Keep application boot single-flight through the module-level `bootPromise` in `App.tsx`; React StrictMode runs effects twice in development.
-- Audio sources use `builtin:<name>` for generated files served from `public/audio`, or `file:<name>` for imports under `%APPDATA%\com.palefire.app\audio`.
+- Audio sources use `builtin:<name>` for generated, tracked files served from `public/audio`, or `file:<name>` for imports under `data/audio`.

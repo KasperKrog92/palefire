@@ -2,6 +2,17 @@
 *.sql text eol=lf
 *.png binary
 *.ico binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
 *.wav binary
+*.mp3 binary
+*.ogg binary
+*.flac binary
+*.m4a binary
+*.aac binary
+*.opus binary
+*.db binary
 *.woff binary
 *.woff2 binary

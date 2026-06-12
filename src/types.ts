@@ -44,7 +44,7 @@ export interface ArchiveEntry {
 export interface AudioFile {
   id: number;
   name: string;
-  /** "builtin:engine-hum.wav" for bundled loops, "file:<name>" for imports under appdata/audio */
+  /** "builtin:engine-hum.wav" for bundled loops, "file:<name>" for imports under data/audio */
   source: string;
   created_at: string;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { appConfigDir } from "@tauri-apps/api/path";
 import { getDataDir } from "../files";
+import { getProjectPaths } from "../projectPaths";
 import { useApp } from "../stores/appStore";
 import { Field, ViewHeader } from "../components/ui";
 import { Flame } from "../components/icons";
@@ -8,11 +8,11 @@ import { Flame } from "../components/icons";
 export function Settings() {
   const { theme, setTheme, defaultFadeMs, setDefaultFadeMs } = useApp();
   const [dataDir, setDataDir] = useState("…");
-  const [configDir, setConfigDir] = useState("…");
+  const [databasePath, setDatabasePath] = useState("…");
 
   useEffect(() => {
     getDataDir().then(setDataDir);
-    appConfigDir().then(setConfigDir);
+    getProjectPaths().then((paths) => setDatabasePath(paths.databasePath));
   }, []);
 
   return (
@@ -72,11 +72,11 @@ export function Settings() {
             </h2>
             <div className="flex flex-col gap-3 text-[13px]">
               <PathRow label="Images & audio" path={dataDir} />
-              <PathRow label="Database" path={`${configDir}\\palefire.db`} />
+              <PathRow label="Database" path={databasePath} />
             </div>
             <p className="mt-4 text-[12.5px] leading-relaxed text-faint">
-              Everything Palefire knows lives in these folders, on this machine. Copy them and
-              you have copied the whole harbor.
+              These files live directly in the cloned repository. Close Palefire before
+              pulling, committing, or pushing them.
             </p>
           </section>
 

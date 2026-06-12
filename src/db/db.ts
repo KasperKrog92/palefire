@@ -1,4 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
+import { getProjectPaths } from "../projectPaths";
 
 let db: Database | null = null;
 
@@ -8,7 +9,7 @@ export function inTauri(): boolean {
 
 export async function getDb(): Promise<Database> {
   if (!db) {
-    db = await Database.load("sqlite:palefire.db");
+    db = await Database.load((await getProjectPaths()).databaseUrl);
   }
   return db;
 }

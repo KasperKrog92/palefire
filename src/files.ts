@@ -1,12 +1,13 @@
-import { appDataDir, join } from "@tauri-apps/api/path";
+import { join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { copyFile, exists, mkdir, readFile, remove } from "@tauri-apps/plugin-fs";
+import { getProjectPaths } from "./projectPaths";
 
 let dataDir: string | null = null;
 
 export async function getDataDir(): Promise<string> {
-  if (!dataDir) dataDir = await appDataDir();
+  if (!dataDir) dataDir = (await getProjectPaths()).dataDir;
   return dataDir;
 }
 
@@ -33,7 +34,7 @@ function uniqueName(original: string): string {
   return `${Date.now().toString(36)}-${stem || "file"}${ext}`;
 }
 
-/** Opens a picker and copies the chosen image into appdata/images. Returns the stored name. */
+/** Opens a picker and copies the chosen image into data/images. Returns the stored name. */
 export async function importImage(): Promise<string | null> {
   const picked = await open({
     multiple: false,
@@ -46,7 +47,7 @@ export async function importImage(): Promise<string | null> {
   return stored;
 }
 
-/** Opens a picker and copies chosen audio files into appdata/audio. Returns stored names with display names. */
+/** Opens a picker and copies chosen audio files into data/audio. Returns stored names with display names. */
 export async function importAudioFiles(): Promise<{ stored: string; display: string }[]> {
   const picked = await open({
     multiple: true,
@@ -84,7 +85,7 @@ export async function deleteAudio(storedName: string): Promise<void> {
 
 /**
  * Loads the raw bytes for an audio_files.source value.
- * Built-in loops ship with the frontend; imports live in appdata/audio.
+ * Built-in loops ship with the frontend; imports live in data/audio.
  */
 export async function loadAudioBytes(source: string): Promise<ArrayBuffer> {
   if (source.startsWith("builtin:")) {

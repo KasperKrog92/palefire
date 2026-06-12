@@ -7,8 +7,8 @@ the kind where the room's atmosphere matters as much as the rulebook. It keeps y
 scenes, notes and layered ambient soundscapes in one calm place, and stays out of your
 way while you play.
 
-Everything lives on your machine: a SQLite database and a folder of images and audio.
-No accounts, no cloud, no sync.
+Everything lives directly in the cloned repository: the SQLite database, imported images
+and audio, and the built-in ambience loops. No accounts, no cloud, no sync.
 
 ![Palefire](app-icon.png)
 
@@ -26,9 +26,10 @@ No accounts, no cloud, no sync.
   linked NPCs a tap away, previous/next scene, and the atmosphere controls that matter.
 - **Logbook** — timestamped session notes, nothing more.
 
-Palefire ships with **The Night Ferry**, a small example campaign aboard the MS Aurelia,
-including six scenes and six procedurally generated ambience loops (engine hum, north sea
-swell, rain on steel, cabin drone, radio static, dock wind).
+Palefire ships with **Nox Trajectus**, the Night Ferry campaign setting. Its archive
+contains the vessel, crew, ports, factions, and mysteries needed to begin play without
+preparing a fixed route. Six procedurally generated ambience loops are included: engine
+hum, north sea swell, rain on steel, cabin drone, radio static, and dock wind.
 
 ## Stack
 
@@ -47,13 +48,36 @@ npm run typecheck      # TypeScript check
 npm run tauri build    # produce the Windows installer (NSIS)
 ```
 
-The built-in ambience loops and the app icon are generated procedurally — no binary
-assets in the repo:
+The built-in ambience loops and the app icon are generated procedurally. Their generated
+files are committed so a clone already contains every asset:
 
 ```sh
 npm run ambience               # regenerate public/audio/*.wav
 node scripts/generate-icon.mjs # regenerate app-icon.png
 ```
+
+### Moving between PCs
+
+Clone or pull the repository, install dependencies, and run Palefire:
+
+```sh
+git pull origin main
+npm install
+npm run tauri dev
+```
+
+Run the session normally. Palefire writes directly to `data/palefire.db`,
+`data/images/`, and `data/audio/`. When the session is over, close Palefire before using
+Git so SQLite can finish writing the database:
+
+```sh
+git add -A
+git commit -m "Save campaign after session"
+git push origin main
+```
+
+Do not run Palefire from two PCs against divergent copies of the database. Git stores the
+SQLite file as a binary and cannot merge competing database edits.
 
 ## Documentation
 
@@ -66,8 +90,10 @@ node scripts/generate-icon.mjs # regenerate app-icon.png
 
 | What | Where |
 | --- | --- |
-| Database | `%APPDATA%/com.palefire.app/palefire.db` |
-| Imported images | `%APPDATA%/com.palefire.app/images/` |
-| Imported audio | `%APPDATA%/com.palefire.app/audio/` |
+| Database | `data/palefire.db` |
+| Imported images | `data/images/` |
+| Imported audio | `data/audio/` |
+| Built-in ambience | `public/audio/` |
 
-Copy those and you've copied the whole harbor.
+SQLite may create `data/palefire.db-wal` and `data/palefire.db-shm` while Palefire is
+open. They are runtime sidecars and are ignored by Git.
