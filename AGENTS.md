@@ -30,3 +30,4 @@ The app's voice is quiet and literary (see seed content and empty states). The p
 - `docs/development.md` holds durable architecture, environment, and troubleshooting knowledge.
 - Keep transient session metadata and personal machine notes out of tracked documentation.
 - When the user asks to commit and push, review `AGENTS.md` and the relevant durable-memory documents before committing. Update them when the work changes architecture, constraints, setup, workflows, or design intent, then include those documentation updates in the same commit.
+- A request to commit and push means commit the intended changes and push them to GitHub's `main` branch. Use another branch only when the user explicitly requests one.
