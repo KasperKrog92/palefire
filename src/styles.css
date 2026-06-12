@@ -1,0 +1,299 @@
+@import "@fontsource-variable/fraunces";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Palefire palette — a ferry saloon after midnight.                   */
+/* ------------------------------------------------------------------ */
+:root,
+[data-theme="dark"] {
+  --c-bg: #13161c;
+  --c-bg-deep: #0e1116;
+  --c-panel: #1a1e26;
+  --c-raised: #20252f;
+  --c-overlay: #272d39;
+  --c-line: #2b313d;
+  --c-line-strong: #3a4150;
+  --c-ink: #e9e2d3;
+  --c-muted: #a59c8a;
+  --c-faint: #6f6c63;
+  --c-ember: #d9924b;
+  --c-ember-bright: #eaa962;
+  --c-ember-dim: #8a5f33;
+  --c-brass: #c2a36b;
+  --c-sea: #84a7b3;
+  --c-danger: #c25e5a;
+  --c-glow: rgba(217, 146, 75, 0.14);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.5), 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+  --c-bg: #ece5d8;
+  --c-bg-deep: #e2dac9;
+  --c-panel: #f4efe4;
+  --c-raised: #faf6ed;
+  --c-overlay: #ffffff;
+  --c-line: #d6ccb9;
+  --c-line-strong: #bdb29c;
+  --c-ink: #2e2a23;
+  --c-muted: #6e6657;
+  --c-faint: #99917f;
+  --c-ember: #b06f2c;
+  --c-ember-bright: #97581d;
+  --c-ember-dim: #d8b186;
+  --c-brass: #8a6f3c;
+  --c-sea: #4a7280;
+  --c-danger: #a8423e;
+  --c-glow: rgba(176, 111, 44, 0.12);
+  --shadow-card: 0 1px 2px rgba(62, 50, 30, 0.18), 0 8px 24px rgba(62, 50, 30, 0.12);
+  --shadow-lift: 0 2px 6px rgba(62, 50, 30, 0.2), 0 16px 48px rgba(62, 50, 30, 0.18);
+}
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-bg-deep: var(--c-bg-deep);
+  --color-panel: var(--c-panel);
+  --color-raised: var(--c-raised);
+  --color-overlay: var(--c-overlay);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-ember: var(--c-ember);
+  --color-ember-bright: var(--c-ember-bright);
+  --color-ember-dim: var(--c-ember-dim);
+  --color-brass: var(--c-brass);
+  --color-sea: var(--c-sea);
+  --color-danger: var(--c-danger);
+  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
+input,
+textarea,
+[contenteditable] {
+  user-select: text;
+  cursor: text;
+}
+
+/* Quiet grain so flat surfaces feel like material, not pixels. */
+#root::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* Soft vignette to pull the light toward the middle of the room. */
+#root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 89;
+  background: radial-gradient(ellipse 120% 90% at 50% 38%, transparent 55%, rgba(0, 0, 0, 0.28) 100%);
+}
+
+[data-theme="light"] #root::before {
+  background: radial-gradient(ellipse 120% 90% at 50% 38%, transparent 60%, rgba(82, 62, 34, 0.12) 100%);
+}
+
+::selection {
+  background: var(--c-ember-dim);
+  color: var(--c-ink);
+}
+
+/* Scrollbars that stay out of the way */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-line);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-line-strong);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Range inputs — brass on dark rail, used across the mixer */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c-line-strong);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--c-brass);
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: background 120ms ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  background: var(--c-ember-bright);
+}
+input[type="range"]:disabled::-webkit-slider-thumb {
+  background: var(--c-faint);
+}
+
+/* Rendered markdown */
+.prose-pf {
+  user-select: text;
+  cursor: auto;
+}
+.prose-pf > * + * {
+  margin-top: 0.7em;
+}
+.prose-pf h1,
+.prose-pf h2,
+.prose-pf h3 {
+  font-family: var(--font-display);
+  font-weight: 550;
+  color: var(--c-ink);
+  line-height: 1.25;
+}
+.prose-pf h1 {
+  font-size: 1.45em;
+  margin-top: 1em;
+}
+.prose-pf h2 {
+  font-size: 1.25em;
+  margin-top: 1em;
+}
+.prose-pf h3 {
+  font-size: 1.08em;
+  margin-top: 0.9em;
+}
+.prose-pf em {
+  color: var(--c-brass);
+}
+.prose-pf strong {
+  color: var(--c-ink);
+  font-weight: 600;
+}
+.prose-pf a {
+  color: var(--c-sea);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-pf ul,
+.prose-pf ol {
+  padding-left: 1.3em;
+}
+.prose-pf ul {
+  list-style: disc;
+}
+.prose-pf ol {
+  list-style: decimal;
+}
+.prose-pf li + li {
+  margin-top: 0.25em;
+}
+.prose-pf blockquote {
+  border-left: 2px solid var(--c-ember-dim);
+  padding-left: 0.9em;
+  color: var(--c-muted);
+  font-style: italic;
+}
+.prose-pf code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--c-raised);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.prose-pf hr {
+  border: none;
+  border-top: 1px solid var(--c-line);
+  margin: 1.2em 0;
+}
+
+/* The slow breathing of the lantern dot on the active scene */
+@keyframes pf-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    box-shadow: 0 0 6px 1px var(--c-glow);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 14px 4px var(--c-glow);
+  }
+}
+.pf-lantern {
+  animation: pf-breathe 3.4s ease-in-out infinite;
+}
+
+@keyframes pf-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pf-enter {
+  animation: pf-fade-up 240ms ease both;
+}
+
+@keyframes pf-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pf-modal-in {
+  animation: pf-modal-in 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
