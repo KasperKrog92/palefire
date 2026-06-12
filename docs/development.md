@@ -41,6 +41,13 @@ pushing so all changes are checkpointed into `palefire.db`.
 Because SQLite is a binary file, Git cannot merge campaign edits made independently on
 two PCs. Pull before a session and push after it rather than running divergent copies.
 
+## Branding assets
+
+- `app-icon.png` is the canonical square source for the desktop icon.
+- `src/assets/palefire-logo.png` is the transparent wordmark used by the frontend.
+- Run `npx tauri icon app-icon.png` after replacing the source icon. Commit the Windows
+  outputs referenced by `src-tauri/tauri.conf.json` under `src-tauri/icons/`.
+
 ## Database and migrations
 
 `tauri-plugin-sql` checksums migration SQL. Never edit a released migration; add a new numbered migration. Keep both protections against Windows line-ending changes:

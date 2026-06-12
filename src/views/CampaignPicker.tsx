@@ -8,7 +8,8 @@ import { ImagePicker } from "../components/ImagePicker";
 import { Modal } from "../components/Modal";
 import { Confirm } from "../components/Confirm";
 import { Button, Field, Input, TextArea } from "../components/ui";
-import { Flame, Pencil, Plus, Trash } from "../components/icons";
+import { Pencil, Plus, Trash } from "../components/icons";
+import palefireLogo from "../assets/palefire-logo.png";
 
 export function CampaignPicker() {
   const { campaigns, openCampaign, loadCampaigns } = useApp();
@@ -19,9 +20,8 @@ export function CampaignPicker() {
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-4xl px-8 pb-16">
         <header className="flex flex-col items-center pt-16 pb-10 text-center pf-enter">
-          <Flame size={30} className="text-ember mb-3" />
-          <h1 className="font-display text-[34px] tracking-[0.04em] text-ink">Palefire</h1>
-          <p className="mt-1 text-sm text-faint">
+          <img src={palefireLogo} alt="Palefire" className="pf-brand-logo h-24 w-auto max-w-[80vw]" />
+          <p className="mt-2 text-sm text-faint">
             Keep the lights low. Keep the table calm.
           </p>
         </header>

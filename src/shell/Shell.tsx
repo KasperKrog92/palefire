@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useApp, type View } from "../stores/appStore";
-import { Book, Cards, ChevronLeft, Flame, Gear, Lantern, Log, Waves } from "../components/icons";
+import { Book, Cards, ChevronLeft, Gear, Lantern, Log, Waves } from "../components/icons";
 import { NowPlayingDock } from "./NowPlayingDock";
 import { SceneBoard } from "../views/SceneBoard";
 import { Archives } from "../views/Archives";
@@ -8,6 +8,7 @@ import { Atmosphere } from "../views/Atmosphere";
 import { LiveTable } from "../views/LiveTable";
 import { Logbook } from "../views/Logbook";
 import { Settings } from "../views/Settings";
+import palefireLogo from "../assets/palefire-logo.png";
 
 const NAV: { view: View; label: string; icon: ReactNode }[] = [
   { view: "scenes", label: "Scene Board", icon: <Cards size={16} /> },
@@ -24,9 +25,8 @@ export function Shell() {
   return (
     <div className="flex h-full">
       <aside className="flex w-[218px] shrink-0 flex-col border-r border-line bg-panel/70">
-        <div className="flex items-center gap-2 px-4 pt-4 pb-1">
-          <Flame size={18} className="text-ember" />
-          <span className="font-display text-[17px] tracking-wide text-ink">Palefire</span>
+        <div className="px-4 pt-4 pb-1">
+          <img src={palefireLogo} alt="Palefire" className="pf-brand-logo h-9 w-auto max-w-full" />
         </div>
 
         <button

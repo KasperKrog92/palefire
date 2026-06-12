@@ -7,6 +7,7 @@ import { useData } from "./stores/dataStore";
 import { Shell } from "./shell/Shell";
 import { CampaignPicker } from "./views/CampaignPicker";
 import { Flame } from "./components/icons";
+import palefireLogo from "./assets/palefire-logo.png";
 
 // Boot exactly once, even under StrictMode's doubled dev effects.
 let bootPromise: Promise<void> | null = null;
@@ -77,8 +78,7 @@ export default function App() {
 function Harbor({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 text-center px-8">
-      <Flame size={30} className="text-ember" />
-      <h1 className="font-display text-3xl text-ink">Palefire</h1>
+      <img src={palefireLogo} alt="Palefire" className="pf-brand-logo h-20 w-auto max-w-[80vw]" />
       <p className="text-sm text-muted leading-relaxed max-w-md">{children}</p>
     </div>
   );

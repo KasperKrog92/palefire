@@ -48,12 +48,12 @@ npm run typecheck      # TypeScript check
 npm run tauri build    # produce the Windows installer (NSIS)
 ```
 
-The built-in ambience loops and the app icon are generated procedurally. Their generated
-files are committed so a clone already contains every asset:
+The built-in ambience loops are generated procedurally. Generated audio and the Palefire
+branding assets are committed so a clone already contains every asset:
 
 ```sh
-npm run ambience               # regenerate public/audio/*.wav
-node scripts/generate-icon.mjs # regenerate app-icon.png
+npm run ambience # regenerate public/audio/*.wav
+npx tauri icon app-icon.png # regenerate src-tauri/icons from the source icon
 ```
 
 ### Moving between PCs

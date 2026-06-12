@@ -94,6 +94,16 @@ body {
   cursor: default;
 }
 
+.pf-brand-logo {
+  opacity: 0.92;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.24));
+}
+
+[data-theme="light"] .pf-brand-logo {
+  opacity: 0.78;
+  filter: brightness(0) saturate(100%);
+}
+
 input,
 textarea,
 [contenteditable] {

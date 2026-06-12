@@ -15,6 +15,10 @@ The writing is quiet, literary, and slightly melancholic. The Night Ferry should
 
 The visual language is a warm, dark ferry interior: deep blue-greys, ember and brass accents, Fraunces for expressive type, and IBM Plex for practical UI text. The canonical palette and font definitions live in `src/styles.css`.
 
+The Palefire flame-over-water icon and transparent wordmark are the canonical visual
+identity. Keep their proportions intact. In light mode, the interface may render the
+wordmark as a dark silhouette for contrast without changing the source artwork.
+
 ## Applying this guidance
 
 When choosing between features or layouts, bias toward live-session usability and low cognitive load. New work should feel native to the existing scene board, archives, atmosphere mixer, Live Table, and logbook rather than introducing a separate product metaphor.
