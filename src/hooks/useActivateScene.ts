@@ -20,6 +20,8 @@ export function useActivateScene() {
     await refreshCampaign();
 
     if (withAtmosphere && scene.preset_id != null) {
+      // if the room is already in this mood, let it be
+      if (useAudio.getState().presetId === scene.preset_id) return;
       const preset = presets.find((p) => p.id === scene.preset_id);
       const layers = layersByPreset.get(scene.preset_id) ?? [];
       if (preset && layers.length > 0) {

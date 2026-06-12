@@ -148,9 +148,10 @@ class AtmosphereEngine {
     // decode everything first so the crossfade starts in sync
     const buffers = await Promise.all(specs.map((s) => this.getBuffer(s.file)));
 
+    // whatever is sounding leaves over its own preset's fade-out
     const outMs = this.currentFadeOutMs;
     for (const layer of this.active.values()) {
-      if (!layer.fading) this.fadeOutLayer(layer, Math.min(outMs, fadeInMs > 60 ? fadeInMs : outMs));
+      if (!layer.fading) this.fadeOutLayer(layer, outMs);
     }
 
     const now = ctx.currentTime;

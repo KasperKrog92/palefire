@@ -8,6 +8,9 @@ import { Shell } from "./shell/Shell";
 import { CampaignPicker } from "./views/CampaignPicker";
 import { Flame } from "./components/icons";
 
+// Boot exactly once, even under StrictMode's doubled dev effects.
+let bootPromise: Promise<void> | null = null;
+
 export default function App() {
   const { booted, bootError, campaign, setBooted, loadCampaigns, hydrateSettings } = useApp();
   const loadAll = useData((s) => s.loadAll);
@@ -18,19 +21,20 @@ export default function App() {
       setBooted("browser");
       return;
     }
-    (async () => {
-      try {
-        await getDb(); // applies migrations
-        await seedIfEmpty();
-        await ensureDirs();
-        await hydrateSettings();
-        await loadCampaigns();
-        setBooted();
-      } catch (e) {
+    bootPromise ??= (async () => {
+      await getDb(); // applies migrations
+      await seedIfEmpty();
+      await ensureDirs();
+      await hydrateSettings();
+      await loadCampaigns();
+    })();
+    bootPromise.then(
+      () => setBooted(),
+      (e) => {
         console.error(e);
         setBooted(String(e));
       }
-    })();
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
