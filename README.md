@@ -55,6 +55,13 @@ npm run ambience               # regenerate public/audio/*.wav
 node scripts/generate-icon.mjs # regenerate app-icon.png
 ```
 
+## Documentation
+
+- [`AGENTS.md`](AGENTS.md) - coding constraints and repository workflow
+- [`docs/design.md`](docs/design.md) - product and visual design intent
+- [`docs/development.md`](docs/development.md) - architecture, environment, and troubleshooting
+- [`docs/visuals.md`](docs/visuals.md) - optional artwork prompts
+
 ## Where your data lives
 
 | What | Where |
