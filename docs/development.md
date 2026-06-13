@@ -56,6 +56,29 @@ Run that on every machine (it is local config, not shared). Bypass a single comm
 Because SQLite is a binary file, Git cannot merge campaign edits made independently on
 two PCs. Pull before a session and push after it rather than running divergent copies.
 
+## Media import
+
+Imported images are re-encoded to WebP in the WebView before they reach `data/images/`.
+`importImage` in `src/files.ts` decodes the picked file with `createImageBitmap`,
+downscales it through an `OffscreenCanvas` so the longest edge is at most 2560 px, and
+writes WebP at quality 0.82. This keeps portraits and cover art a small fraction of
+their original size with no visible loss, which matters because `data/` is tracked in
+Git. Animated GIFs are copied untouched (a canvas would flatten them to one frame), and
+any file that fails to decode or is already smaller than its WebP re-encode is stored
+as-is, so an import never grows. No new dependency is involved — the encoder is the
+WebView's own canvas.
+
+Audio is still copied verbatim: the WebView has no built-in audio encoder, so
+compressing it would require bundling a WASM encoder or an ffmpeg sidecar.
+
+`recompressStoredImage(name)` applies the same pipeline to a file already in
+`data/images/`, writing the new `.webp`, removing the old file, and returning the new
+name with its size delta. It deliberately does not touch the database; callers rewrite
+any references from the old name. The original passenger portraits were compressed this
+way (~2.3 MB PNG to ~130 KB WebP each) by driving the helper and the matching
+`player_characters.image` updates through `cdp.mjs eval` against the running app's live
+database connection, then checkpointing the WAL before closing.
+
 ## Branding assets
 
 - `app-icon.png` is the canonical square source for the desktop icon.

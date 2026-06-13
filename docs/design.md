@@ -10,6 +10,8 @@ Palefire is a local-first Windows tool for tabletop game masters. It favors a ha
   that hold NPCs, locations, factions, and notes.
 - Prefer focused workflows over broad configuration surfaces.
 - Store the campaign locally and make ownership of its files obvious.
+- Compress imported artwork on the way in, so a campaign stays light to store, copy,
+  and carry while its images remain crisp table reference.
 
 ## Passengers
 

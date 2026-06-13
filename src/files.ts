@@ -1,7 +1,7 @@
 import { join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { copyFile, exists, mkdir, readFile, remove } from "@tauri-apps/plugin-fs";
+import { copyFile, exists, mkdir, readFile, remove, writeFile } from "@tauri-apps/plugin-fs";
 import { getProjectPaths } from "./projectPaths";
 
 let dataDir: string | null = null;
@@ -34,16 +34,69 @@ function uniqueName(original: string): string {
   return `${Date.now().toString(36)}-${stem || "file"}${ext}`;
 }
 
-/** Opens a picker and copies the chosen image into data/images. Returns the stored name. */
+/** Longest edge an imported image is downscaled to; covers still look crisp fullscreen on 1440p. */
+const MAX_IMAGE_DIM = 2560;
+/** WebP quality for re-encoded imports — visually near-lossless, a fraction of the original size. */
+const WEBP_QUALITY = 0.82;
+
+/**
+ * Re-encodes image bytes to WebP, downscaling so the longest edge is at most MAX_IMAGE_DIM.
+ * Returns null when the source can't be decoded, or when re-encoding wouldn't shrink an
+ * already-small image — the caller then stores the original untouched.
+ */
+async function compressToWebp(bytes: Uint8Array): Promise<Uint8Array | null> {
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(new Blob([bytes.buffer as ArrayBuffer]));
+  } catch {
+    return null; // unsupported/corrupt; keep the original
+  }
+  const longest = Math.max(bitmap.width, bitmap.height);
+  const scale = Math.min(1, MAX_IMAGE_DIM / longest);
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = new OffscreenCanvas(w, h);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap.close();
+    return null;
+  }
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close();
+  const blob = await canvas.convertToBlob({ type: "image/webp", quality: WEBP_QUALITY });
+  const out = new Uint8Array(await blob.arrayBuffer());
+  // If we didn't downscale and WebP isn't smaller, the original already wins — leave it alone.
+  if (scale === 1 && out.byteLength >= bytes.byteLength) return null;
+  return out;
+}
+
+/** Opens a picker, compresses the chosen image to WebP, and stores it in data/images. Returns the stored name. */
 export async function importImage(): Promise<string | null> {
   const picked = await open({
     multiple: false,
     filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "gif"] }],
   });
   if (!picked) return null;
-  const stored = uniqueName(baseName(picked));
-  const dest = await join(await getDataDir(), "images", stored);
-  await copyFile(picked, dest);
+  const original = baseName(picked);
+  const dir = await join(await getDataDir(), "images");
+
+  // Animated GIFs must stay as-is — canvas would flatten them to a single frame.
+  if (original.toLowerCase().endsWith(".gif")) {
+    const stored = uniqueName(original);
+    await copyFile(picked, await join(dir, stored));
+    return stored;
+  }
+
+  const webp = await compressToWebp(await readFile(picked));
+  if (webp) {
+    const stored = uniqueName(original.replace(/\.[^.]+$/, "") + ".webp");
+    await writeFile(await join(dir, stored), webp);
+    return stored;
+  }
+
+  // Undecodable or already small: store the original untouched.
+  const stored = uniqueName(original);
+  await copyFile(picked, await join(dir, stored));
   return stored;
 }
 
@@ -67,6 +120,29 @@ export async function importAudioFiles(): Promise<{ stored: string; display: str
     out.push({ stored, display: display || original });
   }
   return out;
+}
+
+/**
+ * Re-encodes an already-stored image in place to WebP, using the same pipeline as import
+ * (downscale to MAX_IMAGE_DIM, quality WEBP_QUALITY). Writes the new file, removes the old,
+ * and returns the new stored name with the size delta — or null when the image is left
+ * untouched (animated GIF, undecodable, or already small enough). Callers are responsible
+ * for updating any database references from the old name to the returned name.
+ */
+export async function recompressStoredImage(
+  name: string
+): Promise<{ newName: string; oldBytes: number; newBytes: number } | null> {
+  if (name.toLowerCase().endsWith(".gif")) return null; // preserve animation
+  const dir = await join(await getDataDir(), "images");
+  const src = await join(dir, name);
+  if (!(await exists(src))) return null;
+  const original = await readFile(src);
+  const webp = await compressToWebp(original);
+  if (!webp) return null;
+  const newName = name.replace(/\.[^.]+$/, "") + ".webp";
+  await writeFile(await join(dir, newName), webp);
+  if (newName !== name) await remove(src);
+  return { newName, oldBytes: original.byteLength, newBytes: webp.byteLength };
 }
 
 export async function imageUrl(storedName: string): Promise<string> {
