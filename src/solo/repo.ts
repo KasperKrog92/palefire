@@ -114,6 +114,18 @@ export const crossingMessages = {
       ]
     ),
 
+  updateStreamingBody: (id: number, body: string) =>
+    soloExecute(
+      "UPDATE crossing_messages SET body = ? WHERE id = ? AND status = 'streaming'",
+      [body, id]
+    ),
+
+  failIncompleteForCrossing: (crossingId: number) =>
+    soloExecute(
+      "UPDATE crossing_messages SET status = 'failed', stop_reason = 'interrupted' WHERE crossing_id = ? AND status = 'streaming'",
+      [crossingId]
+    ),
+
   setInContext: (ids: number[], inContext: boolean) =>
     Promise.all(
       ids.map((id) =>

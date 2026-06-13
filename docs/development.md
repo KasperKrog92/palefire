@@ -7,6 +7,8 @@
 - `src/db/repo.ts` owns SQL access.
 - `src/audio/engine.ts` is the singleton Web Audio mixer and crossfade engine.
 - `src/projectPaths.ts` reads the repository data paths exposed by the Rust shell.
+- `src/solo/` owns the lazy private database, provider boundary, Anthropic transport,
+  narrator prompt, and redacted campaign-context assembly for Solo Crossing.
 - `src/stores/` contains the Zustand app, data, and audio stores.
 - `src/views/` contains one module per sidebar view.
 - `src/db/seed.ts` contains the Nox Trajectus campaign.

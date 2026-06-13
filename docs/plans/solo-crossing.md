@@ -1,6 +1,6 @@
 # Plan — Solo Crossing (conversational play between sessions)
 
-Status: **Phase 1 complete** — local crossing lifecycle is implemented; AI conversation has not started.
+Status: **Phase 2 complete** — the private crossing lifecycle and streaming conversation MVP are implemented.
 Last revised: 2026-06-13
 Scope: add one deliberately bounded AI feature to the owner's personal Palefire
 clone without changing the local-first behavior of the core campaign tools.
@@ -561,6 +561,8 @@ Exit criteria: crossing lifecycle persists across restarts; no `solo.db` is crea
 during ordinary core-app use; `palefire.db` remains unchanged.
 
 ### Phase 2 — Streaming conversation MVP
+
+Status: **complete (2026-06-13)**.
 
 Files: `src/solo/{provider,anthropic,bible,prompts,context}.ts`,
 `src/stores/soloStore.ts`, `src/views/SoloCrossing.tsx`, `src/styles.css`.

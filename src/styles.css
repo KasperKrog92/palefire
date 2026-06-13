@@ -264,6 +264,35 @@ input[type="range"]:disabled::-webkit-slider-thumb {
   margin: 1.2em 0;
 }
 
+.solo-narration {
+  color: var(--c-muted);
+}
+
+.solo-narration > * + * {
+  margin-top: 0.95em;
+}
+
+.solo-ink-arriving::after {
+  content: "";
+  display: inline-block;
+  width: 0.42em;
+  height: 1em;
+  margin-left: 0.18em;
+  vertical-align: -0.12em;
+  background: var(--c-ember-dim);
+  animation: pf-ink-pulse 1.15s ease-in-out infinite;
+}
+
+@keyframes pf-ink-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 /* The slow breathing of the lantern dot on the active scene */
 @keyframes pf-breathe {
   0%,

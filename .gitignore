@@ -1,6 +1,7 @@
 node_modules/
 dist/
 *.local
+.env.local
 
 # SQLite runtime sidecars; close Palefire before committing the database.
 data/palefire.db-wal
