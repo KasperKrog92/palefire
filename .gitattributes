@@ -1,5 +1,6 @@
 * text=auto
 *.sql text eol=lf
+.githooks/pre-commit text eol=lf
 *.png binary
 *.ico binary
 *.jpg binary

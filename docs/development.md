@@ -38,6 +38,18 @@ SQLite may create `palefire.db-wal` and `palefire.db-shm` beside the database wh
 app is open. They are ignored by Git. Close Palefire before pulling, committing, or
 pushing so all changes are checkpointed into `palefire.db`.
 
+A tracked `pre-commit` hook in `.githooks/` enforces this: it blocks any commit that
+stages `data/palefire.db` while a non-empty `data/palefire.db-wal` exists, since that
+would capture a stale database and drop the unsaved campaign data. The hook is inert
+until each clone is pointed at it once:
+
+```powershell
+git config core.hooksPath .githooks
+```
+
+Run that on every machine (it is local config, not shared). Bypass a single commit with
+`git commit --no-verify` if the WAL is a known-harmless leftover.
+
 Because SQLite is a binary file, Git cannot merge campaign edits made independently on
 two PCs. Pull before a session and push after it rather than running divergent copies.
 

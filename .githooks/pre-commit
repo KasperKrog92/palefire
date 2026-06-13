@@ -1,0 +1,40 @@
+#!/bin/sh
+# Guard against committing a stale Palefire database.
+#
+# Palefire's SQLite runs in WAL mode: recent writes live in
+# data/palefire.db-wal until the app closes and checkpoints them into
+# data/palefire.db. The -wal sidecar is gitignored, so committing the .db
+# while Palefire is still open captures a STALE database and silently drops
+# the unsaved campaign data (see AGENTS.md "Invariants").
+#
+# This hook refuses such a commit. Close Palefire (which flushes the WAL),
+# then commit again.
+
+db="data/palefire.db"
+wal="data/palefire.db-wal"
+
+# Only act when the database is actually part of this commit.
+if ! git diff --cached --name-only | grep -Fqx "$db"; then
+  exit 0
+fi
+
+if [ -f "$wal" ]; then
+  size=$(wc -c < "$wal" 2>/dev/null | tr -d ' ')
+  if [ "${size:-0}" -gt 0 ]; then
+    echo "" >&2
+    echo "  ✖ Commit blocked: $db is staged, but $wal is $size bytes." >&2
+    echo "" >&2
+    echo "    That WAL sidecar holds writes not yet saved into the database." >&2
+    echo "    Committing now would push a stale db and lose that work." >&2
+    echo "" >&2
+    echo "    Fix: close Palefire completely (this flushes the WAL), then" >&2
+    echo "         re-run your commit." >&2
+    echo "" >&2
+    echo "    If Palefire is already closed and this persists, the WAL is a" >&2
+    echo "    harmless leftover; bypass once with:  git commit --no-verify" >&2
+    echo "" >&2
+    exit 1
+  fi
+fi
+
+exit 0
