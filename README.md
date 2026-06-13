@@ -8,7 +8,8 @@ scenes, notes and layered ambient soundscapes in one calm place, and stays out o
 way while you play.
 
 Everything lives directly in the cloned repository: the SQLite database and imported
-images and audio. No accounts, no cloud, no sync.
+images and audio. No accounts or sync; the core prep tools make no cloud calls.
+The optional, personal Solo Crossing narrator is the one documented exception.
 
 ![Palefire](app-icon.png)
 

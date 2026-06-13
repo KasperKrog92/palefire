@@ -1,6 +1,12 @@
 # Design intent
 
-Palefire is a local-first Windows tool for tabletop game masters. It favors a handcrafted, atmospheric experience over generic SaaS conventions: no accounts, cloud services, AI features, plugin system, or feature density for its own sake.
+Palefire is a local-first Windows tool for tabletop game masters. It favors a handcrafted, atmospheric experience over generic SaaS conventions: no accounts, telemetry, plugin system, or feature density for its own sake. Its core campaign and live-table tools make no network calls.
+
+The sole exception is **Solo Crossing**, an opt-in conversational narrator for the
+owner's personal between-session play. It may send selected campaign context to an
+LLM provider, but it must remain passenger-bound, off the main navigation, disabled
+without a local API key, and isolated from the tracked campaign database. Its full
+design and implementation boundary live in [`plans/solo-crossing.md`](plans/solo-crossing.md).
 
 ## Product priorities
 
@@ -29,6 +35,11 @@ derive additional mechanics from them.
 
 Live Table passenger summaries must remain safe to show players. GM-only secrets and
 what the ferry may need belong only behind the collapsed curtain on the full sheet.
+
+Solo Crossing begins from a passenger sheet rather than becoming another main
+workspace. Its transcript and private memories live outside tracked campaign data.
+Model narration is provisional: only an explicit, confirmed promotion may turn part
+of a crossing into campaign canon.
 
 ## Atmosphere
 

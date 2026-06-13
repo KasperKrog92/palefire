@@ -1,6 +1,8 @@
 # Palefire - notes for coding agents
 
-Local-first Windows desktop app for tabletop GMs (Tauri v2 + React 19 + TS + Tailwind v4 + SQLite + Web Audio). No cloud, no accounts, no AI features, no plugin system - keep it that way.
+Local-first Windows desktop app for tabletop GMs (Tauri v2 + React 19 + TS + Tailwind v4 + SQLite + Web Audio). Personal single-user tool: no accounts, no telemetry, no plugin system - keep it that way.
+
+The one sanctioned exception to the otherwise local-only, no-AI stance is **Solo Crossing** (`docs/plans/solo-crossing.md`): an opt-in conversational AI narrator the owner uses to play a recurring passenger between sessions. It is the only feature that makes outbound calls (to an LLM provider), it reads its API key from a gitignored `.env.local` (`VITE_ANTHROPIC_API_KEY`), and it keeps all of its data in a separate, gitignored `data/solo.db`. The core prep tools stay fully local and work with the feature off.
 
 ## Commands
 
