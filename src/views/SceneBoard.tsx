@@ -74,7 +74,7 @@ export function SceneBoard() {
         </Button>
       </ViewHeader>
 
-      <div className="flex-1 overflow-y-auto px-8 pb-10 2xl:px-10">
+      <div className="flex-1 overflow-y-auto px-8 pb-10 pt-3 2xl:px-10 2xl:pt-4">
         {scenes.length === 0 ? (
           <EmptyState icon={<Cards size={36} />} title="The board is bare">
             Scenes are your index cards for the night — notes, atmosphere, and the people in the
