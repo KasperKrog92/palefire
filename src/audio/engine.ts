@@ -45,6 +45,7 @@ class AtmosphereEngine {
   private masterGain: GainNode | null = null;
   private buffers = new Map<number, Promise<AudioBuffer>>();
   private active = new Map<string, ActiveLayer>();
+  private oneShots = new Set<{ source: AudioBufferSourceNode; gain: GainNode }>();
   private listeners = new Set<(s: EngineSnapshot) => void>();
   private keyCounter = 0;
 
@@ -195,6 +196,35 @@ class AtmosphereEngine {
     this.emit();
   }
 
+  /**
+   * Fires a single non-looping sound once — a manual stinger (a bell, a
+   * foghorn) that stays out of the looping ambient bed and the live mixer, so
+   * it never auto-plays on scene activation. Panic still silences it.
+   */
+  async trigger(file: AudioFile, volume: number): Promise<void> {
+    const ctx = this.ensureCtx();
+    if (this.paused) await this.resume();
+    if (ctx.state === "suspended") await ctx.resume();
+
+    const buffer = await this.getBuffer(file);
+    const gain = ctx.createGain();
+    gain.gain.value = Math.max(volume, 0.0001);
+    gain.connect(this.masterGain!);
+
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = false;
+    source.connect(gain);
+
+    const handle = { source, gain };
+    source.onended = () => {
+      gain.disconnect();
+      this.oneShots.delete(handle);
+    };
+    this.oneShots.add(handle);
+    source.start(ctx.currentTime);
+  }
+
   /** Fades everything out using the active preset's fade-out. */
   async stop(fadeMs?: number): Promise<void> {
     if (this.paused) await this.resume();
@@ -214,6 +244,15 @@ class AtmosphereEngine {
     for (const layer of this.active.values()) {
       this.fadeOutLayer(layer, 80);
     }
+    for (const h of this.oneShots) {
+      try {
+        h.source.stop();
+      } catch {
+        // already stopped
+      }
+      h.gain.disconnect();
+    }
+    this.oneShots.clear();
     this.presetId = null;
     this.presetName = null;
     this.emit();

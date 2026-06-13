@@ -134,4 +134,5 @@ WebView2 permits the AudioContext to run without a user gesture in this setup, s
 ## Behavioral invariants
 
 - Keep application boot single-flight through the module-level `bootPromise` in `App.tsx`; React StrictMode runs effects twice in development.
-- Audio sources use `builtin:<name>` for generated, tracked files served from `public/audio`, or `file:<name>` for imports under `data/audio`.
+- Audio sources use `file:<name>` for imported recordings stored under `data/audio`. Palefire is recorded-audio only; the procedurally generated `builtin:` loops were removed in migration `003_remove_builtin_audio.sql`.
+- `playPreset` auto-plays only a preset's looping layers (the ambient bed). Non-looping layers are manual one-shots: they never start on scene activation and are fired by hand via `engine.trigger` from the Live Table helm. The engine tracks one-shots separately from the bed (not in the live mixer), and `panic` stops them too.

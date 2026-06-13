@@ -1,5 +1,5 @@
 import { execute, select } from "./db";
-import { archive, audioFiles, campaigns, settings } from "./repo";
+import { archive, campaigns, settings } from "./repo";
 import type { ArchiveCategory } from "../types";
 
 type SeedEntry = {
@@ -359,18 +359,6 @@ export async function seedIfEmpty(): Promise<void> {
   if (n > 0) {
     await settings.set("seeded", "1");
     return;
-  }
-
-  const sounds = [
-    ["Engine Hum", "engine-hum.wav"],
-    ["North Sea Swell", "north-sea-swell.wav"],
-    ["Rain on Steel", "rain-on-steel.wav"],
-    ["Cabin Drone", "cabin-drone.wav"],
-    ["Radio Static", "radio-static.wav"],
-    ["Dock Wind", "dock-wind.wav"],
-  ] as const;
-  for (const [name, file] of sounds) {
-    await audioFiles.create(name, `builtin:${file}`);
   }
 
   const campaignId = await campaigns.create({

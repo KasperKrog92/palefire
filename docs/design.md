@@ -30,6 +30,24 @@ derive additional mechanics from them.
 Live Table passenger summaries must remain safe to show players. GM-only secrets and
 what the ferry may need belong only behind the collapsed curtain on the full sheet.
 
+## Atmosphere
+
+Atmosphere is built from recorded sound the GM imports — Palefire ships no
+generated or bundled audio. A preset layers those recordings with per-layer
+volume and fade timings.
+
+A layer is either part of the **ambient bed** or a **one-shot stinger**, decided
+by its loop toggle:
+
+- **Looping layers** are the bed. They start automatically when a scene's
+  atmosphere activates and crossfade between moods.
+- **Non-looping layers** ("plays once") never auto-play. They surface as manual
+  trigger buttons in the Live Table helm, so the GM fires a bell, a foghorn, or a
+  knock on cue. Panic silences everything, stingers included.
+
+This keeps the live soundscape calm by default — nothing startles the table
+unless the GM chooses it.
+
 ## Voice and mood
 
 The writing is quiet, literary, and slightly melancholic. The Night Ferry should remain ambiguous rather than leaning on explicit horror cliches. Empty states and labels should feel reassuring and unobtrusive.

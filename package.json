@@ -5,13 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predev": "node scripts/generate-ambience.mjs",
-    "prebuild": "node scripts/generate-ambience.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "typecheck": "tsc --noEmit",
-    "ambience": "node scripts/generate-ambience.mjs"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

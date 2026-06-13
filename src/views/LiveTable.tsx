@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { ArchiveEntry, PlayerCharacter } from "../types";
+import type { ArchiveEntry, AudioFile, PlayerCharacter } from "../types";
 import { ARCHIVE_CATEGORIES, PC_ATTRIBUTES, PC_CONDITIONS, parseTags } from "../types";
 import { useApp } from "../stores/appStore";
 import { useData } from "../stores/dataStore";
@@ -43,6 +43,16 @@ export function LiveTable() {
     () => (scene?.preset_id != null ? presets.find((p) => p.id === scene.preset_id) ?? null : null),
     [scene, presets]
   );
+
+  // Non-looping layers of the active preset: manual stingers the GM fires by hand.
+  const oneShots = useMemo(() => {
+    if (!scenePreset) return [];
+    const byId = new Map(audioFiles.map((f) => [f.id, f]));
+    return (layersByPreset.get(scenePreset.id) ?? [])
+      .filter((l) => l.loop === 0)
+      .map((l) => ({ id: l.id, volume: l.volume, file: byId.get(l.audio_file_id) }))
+      .filter((s): s is { id: number; volume: number; file: AudioFile } => s.file != null);
+  }, [scenePreset, layersByPreset, audioFiles]);
 
   const linkedEntries = useMemo(() => {
     if (!scene) return [];
@@ -162,6 +172,23 @@ export function LiveTable() {
             />
           ))}
         </div>
+
+        {/* one-shot stingers: non-looping layers fired by hand, never automatically */}
+        {oneShots.length > 0 && (
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
+            {oneShots.map((shot) => (
+              <button
+                key={shot.id}
+                onClick={() => audio.trigger(shot.file, shot.volume)}
+                title={`Play “${shot.file.name}” once`}
+                className="flex h-8 items-center gap-1.5 rounded-full border border-line bg-raised/60 px-3.5 text-[12px] text-muted transition-all hover:border-ember/50 hover:text-ember active:scale-95"
+              >
+                <Play size={10} />
+                <span className="max-w-40 truncate">{shot.file.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center justify-between gap-4">
           <HelmButton onClick={() => go(-1)} disabled={activeIndex <= 0} title="Previous scene (←)">

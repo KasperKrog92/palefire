@@ -161,14 +161,9 @@ export async function deleteAudio(storedName: string): Promise<void> {
 
 /**
  * Loads the raw bytes for an audio_files.source value.
- * Built-in loops ship with the frontend; imports live in data/audio.
+ * Imported sounds live under data/audio, referenced as "file:<name>".
  */
 export async function loadAudioBytes(source: string): Promise<ArrayBuffer> {
-  if (source.startsWith("builtin:")) {
-    const res = await fetch(`/audio/${source.slice("builtin:".length)}`);
-    if (!res.ok) throw new Error(`Missing built-in audio: ${source}`);
-    return res.arrayBuffer();
-  }
   const name = source.startsWith("file:") ? source.slice("file:".length) : source;
   const bytes = await readFile(await join(await getDataDir(), "audio", name));
   return bytes.buffer as ArrayBuffer;

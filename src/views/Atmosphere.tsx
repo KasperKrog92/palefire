@@ -31,8 +31,27 @@ export function Atmosphere() {
   const [editing, setEditing] = useState<Preset | "new" | null>(null);
   const [deleting, setDeleting] = useState<Preset | null>(null);
   const [deletingFile, setDeletingFile] = useState<AudioFile | null>(null);
+  const [renamingId, setRenamingId] = useState<number | null>(null);
+  const [draftName, setDraftName] = useState("");
 
   const fileNames = useMemo(() => new Map(audioFiles.map((f) => [f.id, f.name])), [audioFiles]);
+
+  const startRename = (f: AudioFile) => {
+    setRenamingId(f.id);
+    setDraftName(f.name);
+  };
+
+  const commitRename = async () => {
+    if (renamingId === null) return;
+    const id = renamingId;
+    setRenamingId(null);
+    const name = draftName.trim();
+    const current = audioFiles.find((f) => f.id === id);
+    if (name && current && name !== current.name) {
+      await audioRepo.rename(id, name);
+      await reloadAudioFiles();
+    }
+  };
 
   const importAudio = async () => {
     const imported = await importAudioFiles();
@@ -190,7 +209,6 @@ export function Atmosphere() {
         <div className="overflow-hidden rounded-lg border border-line bg-panel/60">
           {audioFiles.map((f, i) => {
             const previewing = audio.presetId === null && audio.playing && audio.layers.some((l) => l.fileId === f.id);
-            const builtin = f.source.startsWith("builtin:");
             return (
               <div
                 key={f.id}
@@ -207,19 +225,41 @@ export function Atmosphere() {
                 >
                   {previewing ? <Stop size={11} /> : <Play size={11} />}
                 </button>
-                <span className="min-w-0 flex-1 truncate text-sm text-ink">{f.name}</span>
-                <span className="shrink-0 text-[10.5px] uppercase tracking-wider text-faint">
-                  {builtin ? "built-in" : "imported"}
-                </span>
-                {!builtin && (
+                {renamingId === f.id ? (
+                  <Input
+                    autoFocus
+                    value={draftName}
+                    onChange={(e) => setDraftName(e.target.value)}
+                    onBlur={commitRename}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitRename();
+                      else if (e.key === "Escape") setRenamingId(null);
+                    }}
+                    className="min-w-0 flex-1 py-1 text-sm"
+                  />
+                ) : (
                   <button
-                    title="Remove from library"
-                    onClick={() => setDeletingFile(f)}
-                    className="shrink-0 text-faint transition-colors hover:text-danger"
+                    title="Rename"
+                    onDoubleClick={() => startRename(f)}
+                    className="min-w-0 flex-1 truncate text-left text-sm text-ink"
                   >
-                    <Trash size={13} />
+                    {f.name}
                   </button>
                 )}
+                <button
+                  title="Rename"
+                  onClick={() => startRename(f)}
+                  className="shrink-0 text-faint transition-colors hover:text-ember"
+                >
+                  <Pencil size={13} />
+                </button>
+                <button
+                  title="Remove from library"
+                  onClick={() => setDeletingFile(f)}
+                  className="shrink-0 text-faint transition-colors hover:text-danger"
+                >
+                  <Trash size={13} />
+                </button>
               </div>
             );
           })}

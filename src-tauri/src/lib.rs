@@ -49,6 +49,11 @@ pub fn run() {
             .replace("\r\n", "\n")
             .into_boxed_str(),
     );
+    let remove_builtin_audio: &'static str = Box::leak(
+        include_str!("../migrations/003_remove_builtin_audio.sql")
+            .replace("\r\n", "\n")
+            .into_boxed_str(),
+    );
     let migrations = vec![
         Migration {
             version: 1,
@@ -60,6 +65,12 @@ pub fn run() {
             version: 2,
             description: "player_characters",
             sql: pcs,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 3,
+            description: "remove_builtin_audio",
+            sql: remove_builtin_audio,
             kind: MigrationKind::Up,
         },
     ];

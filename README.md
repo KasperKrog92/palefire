@@ -7,8 +7,8 @@ the kind where the room's atmosphere matters as much as the rulebook. It keeps y
 scenes, notes and layered ambient soundscapes in one calm place, and stays out of your
 way while you play.
 
-Everything lives directly in the cloned repository: the SQLite database, imported images
-and audio, and the built-in ambience loops. No accounts, no cloud, no sync.
+Everything lives directly in the cloned repository: the SQLite database and imported
+images and audio. No accounts, no cloud, no sync.
 
 ![Palefire](app-icon.png)
 
@@ -28,8 +28,8 @@ and audio, and the built-in ambience loops. No accounts, no cloud, no sync.
 
 Palefire ships with **Nox Trajectus**, the Night Ferry campaign setting. Its archive
 contains the vessel, crew, ports, factions, and mysteries needed to begin play without
-preparing a fixed route. Six procedurally generated ambience loops are included: engine
-hum, north sea swell, rain on steel, cabin drone, radio static, and dock wind.
+preparing a fixed route. Bring your own ambience: import recorded sounds and layer them
+into atmosphere presets.
 
 ## Stack
 
@@ -48,11 +48,9 @@ npm run typecheck      # TypeScript check
 npm run tauri build    # produce the Windows installer (NSIS)
 ```
 
-The built-in ambience loops are generated procedurally. Generated audio and the Palefire
-branding assets are committed so a clone already contains every asset:
+The Palefire branding assets are committed so a clone already contains every asset:
 
 ```sh
-npm run ambience # regenerate public/audio/*.wav
 npx tauri icon app-icon.png # regenerate src-tauri/icons from the source icon
 ```
 
@@ -93,7 +91,6 @@ SQLite file as a binary and cannot merge competing database edits.
 | Database | `data/palefire.db` |
 | Imported images | `data/images/` |
 | Imported audio | `data/audio/` |
-| Built-in ambience | `public/audio/` |
 
 SQLite may create `data/palefire.db-wal` and `data/palefire.db-shm` while Palefire is
 open. They are runtime sidecars and are ignored by Git.

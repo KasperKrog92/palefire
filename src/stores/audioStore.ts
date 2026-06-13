@@ -10,6 +10,7 @@ interface AudioState extends EngineSnapshot {
     fallbackFadeMs: number
   ) => Promise<void>;
   preview: (file: AudioFile) => Promise<void>;
+  trigger: (file: AudioFile, volume: number) => Promise<void>;
   stop: () => Promise<void>;
   panic: () => Promise<void>;
   togglePause: () => Promise<void>;
@@ -27,10 +28,13 @@ export const useAudio = create<AudioState>((set) => {
 
     playPreset: async (preset, layers, files, fallbackFadeMs) => {
       const byId = new Map(files.map((f) => [f.id, f]));
+      // Only looping layers form the auto-playing ambient bed; non-looping
+      // layers are manual one-shots, triggered by hand from the Live Table.
       const specs = layers
+        .filter((l) => l.loop !== 0)
         .map((l) => {
           const file = byId.get(l.audio_file_id);
-          return file ? { file, volume: l.volume, loop: l.loop !== 0 } : null;
+          return file ? { file, volume: l.volume, loop: true } : null;
         })
         .filter((s): s is NonNullable<typeof s> => s !== null);
       if (specs.length === 0) return;
@@ -46,6 +50,8 @@ export const useAudio = create<AudioState>((set) => {
     preview: async (file) => {
       await engine.play(null, file.name, [{ file, volume: 0.8, loop: true }], 400, 400);
     },
+
+    trigger: (file, volume) => engine.trigger(file, volume),
 
     stop: () => engine.stop(),
     panic: () => engine.panic(),
