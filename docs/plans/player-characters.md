@@ -1,7 +1,29 @@
 # Plan — Player Characters ("Passengers")
 
-Status: proposed (not yet implemented)
+Status: in progress (steps 1–4 of 8 done)
 Author: planning pass, 2026-06-13
+Progress log:
+- 2026-06-13 — Step 1 done: `migrations/002_player_characters.sql` created (all four
+  tables + indexes); version 2 registered in `lib.rs` with the CRLF→LF normalization.
+  `cargo check` passes; `.gitattributes` resolves the file to `eol=lf`.
+- 2026-06-13 — Step 2 done: `types.ts` gains `PlayerCharacter`, `PcConnection`
+  (+`PcConnectionKind`), `PcLogEntry`, `ScenePcLink`, plus `PC_ATTRIBUTES`,
+  `PC_CONDITIONS`, and `isOvercome`. `npm run typecheck` passes.
+- 2026-06-13 — Step 3 done: `repo.ts` gains `playerCharacters` (forCampaign/create/
+  update/setStats/reorder/remove), `pcConnections` (forCampaign/forPc/add/updateNote/
+  remove/removeForArchiveEntry), and `pcLog` (forPc/create/remove). `scenes` extended
+  with linkedPcIds/setLinkedPcs/pcLinksForCampaign/scenesLinkedToPc; `scenes.duplicate`
+  now copies PC links; `archive.remove` calls `pcConnections.removeForArchiveEntry`.
+  Confirmed sqlx enables `PRAGMA foreign_keys = ON`, so cascade deletes hold and only
+  the polymorphic inbound `('pc', id)` rows need manual cleanup in `playerCharacters.remove`.
+  `npm run typecheck` passes.
+- 2026-06-13 — Step 4 done: `appStore.ts` `View` gains `"passengers"` plus the focus
+  channel (`pendingFocus`, `focus(view, id)`, `clearFocus()`). `dataStore.ts` gains
+  `playerCharacters`/`pcConnections`/`pcLinks` state, loaders in `loadAll`,
+  `reloadPlayerCharacters`/`reloadPcConnections`, and `pcLinks` folded into the
+  `fetchScenes` helper (so `reloadScenes` refreshes entry + passenger links together);
+  all three cleared in `clear()`. GM logs remain lazily fetched in the view.
+  `npm run typecheck` passes.
 
 ## Goal
 
@@ -384,13 +406,13 @@ Per the `AGENTS.md` workflow, fold these into the implementing commit:
 
 ## Implementation order (suggested)
 
-1. `migrations/002_player_characters.sql` (incl. `scene_pc_links`) + register
+1. ✅ `migrations/002_player_characters.sql` (incl. `scene_pc_links`) + register
    version 2 in `lib.rs`.
-2. `types.ts` interfaces (incl. `ScenePcLink`) + `PC_ATTRIBUTES` / `PC_CONDITIONS` /
+2. ✅ `types.ts` interfaces (incl. `ScenePcLink`) + `PC_ATTRIBUTES` / `PC_CONDITIONS` /
    `isOvercome`.
-3. `repo.ts` — `playerCharacters`, `pcConnections`, `pcLog`; scene↔passenger link
+3. ✅ `repo.ts` — `playerCharacters`, `pcConnections`, `pcLog`; scene↔passenger link
    helpers + `duplicate` copy; hook `archive.remove`.
-4. `dataStore.ts` (incl. `pcLinks`) + `appStore.ts` (View + focus channel) wiring.
+4. ✅ `dataStore.ts` (incl. `pcLinks`) + `appStore.ts` (View + focus channel) wiring.
 5. `icons.tsx` Passengers icon; `Shell.tsx` nav + route.
 6. `views/Passengers.tsx` — roster, sheet (incl. "Appears in"), modal editor,
    connections picker, GM log.

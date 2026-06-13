@@ -2,7 +2,14 @@ import { create } from "zustand";
 import type { Campaign } from "../types";
 import { campaigns as campaignRepo, settings } from "../db/repo";
 
-export type View = "scenes" | "archives" | "atmosphere" | "live" | "logbook" | "settings";
+export type View =
+  | "scenes"
+  | "archives"
+  | "passengers"
+  | "atmosphere"
+  | "live"
+  | "logbook"
+  | "settings";
 
 export type Theme = "dark" | "light";
 
@@ -12,6 +19,8 @@ interface AppState {
   campaigns: Campaign[];
   campaign: Campaign | null;
   view: View;
+  /** cross-view jump target: a view consumes this on mount/update to select an item, then clears it */
+  pendingFocus: { view: View; id: number } | null;
   theme: Theme;
   defaultFadeMs: number;
 
@@ -21,6 +30,9 @@ interface AppState {
   closeCampaign: () => void;
   refreshCampaign: () => Promise<void>;
   setView: (v: View) => void;
+  /** navigate to a view and ask it to focus the item with the given id */
+  focus: (view: View, id: number) => void;
+  clearFocus: () => void;
   setTheme: (t: Theme) => Promise<void>;
   setDefaultFadeMs: (ms: number) => Promise<void>;
   hydrateSettings: () => Promise<void>;
@@ -32,6 +44,7 @@ export const useApp = create<AppState>((set, get) => ({
   campaigns: [],
   campaign: null,
   view: "scenes",
+  pendingFocus: null,
   theme: "dark",
   defaultFadeMs: 2500,
 
@@ -53,6 +66,10 @@ export const useApp = create<AppState>((set, get) => ({
   },
 
   setView: (v) => set({ view: v }),
+
+  focus: (view, id) => set({ view, pendingFocus: { view, id } }),
+
+  clearFocus: () => set({ pendingFocus: null }),
 
   setTheme: async (t) => {
     set({ theme: t });

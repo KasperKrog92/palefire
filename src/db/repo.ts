@@ -5,9 +5,14 @@ import type {
   AudioFile,
   Campaign,
   LogEntry,
+  PcConnection,
+  PcConnectionKind,
+  PcLogEntry,
+  PlayerCharacter,
   Preset,
   PresetLayer,
   Scene,
+  ScenePcLink,
 } from "../types";
 
 const now = () => new Date().toISOString().replace("T", " ").slice(0, 19);
@@ -101,6 +106,13 @@ export const scenes = {
         l.entry_id,
       ]);
     }
+    const pcLinks = await select<{ pc_id: number }>(
+      "SELECT pc_id FROM scene_pc_links WHERE scene_id = ?",
+      [id]
+    );
+    for (const l of pcLinks) {
+      await execute("INSERT INTO scene_pc_links (scene_id, pc_id) VALUES (?, ?)", [newId, l.pc_id]);
+    }
     return newId;
   },
 
@@ -134,6 +146,32 @@ export const scenes = {
     select<Scene>(
       "SELECT s.* FROM scenes s JOIN scene_entry_links l ON l.scene_id = s.id WHERE l.entry_id = ? ORDER BY s.position",
       [entryId]
+    ),
+
+  linkedPcIds: async (sceneId: number) =>
+    (
+      await select<{ pc_id: number }>("SELECT pc_id FROM scene_pc_links WHERE scene_id = ?", [
+        sceneId,
+      ])
+    ).map((r) => r.pc_id),
+
+  setLinkedPcs: async (sceneId: number, pcIds: number[]) => {
+    await execute("DELETE FROM scene_pc_links WHERE scene_id = ?", [sceneId]);
+    for (const p of pcIds) {
+      await execute("INSERT INTO scene_pc_links (scene_id, pc_id) VALUES (?, ?)", [sceneId, p]);
+    }
+  },
+
+  pcLinksForCampaign: (campaignId: number) =>
+    select<ScenePcLink>(
+      "SELECT l.scene_id, l.pc_id FROM scene_pc_links l JOIN scenes s ON s.id = l.scene_id WHERE s.campaign_id = ?",
+      [campaignId]
+    ),
+
+  scenesLinkedToPc: (pcId: number) =>
+    select<Scene>(
+      "SELECT s.* FROM scenes s JOIN scene_pc_links l ON l.scene_id = s.id WHERE l.pc_id = ? ORDER BY s.position",
+      [pcId]
     ),
 };
 
@@ -170,7 +208,193 @@ export const archive = {
       [e.category, e.title, e.body, e.tags, e.image, now(), id]
     ),
 
-  remove: (id: number) => execute("DELETE FROM archive_entries WHERE id = ?", [id]),
+  remove: async (id: number) => {
+    // pc_connections.target_id is not a foreign key (it's polymorphic), so
+    // clear any passenger links pointing at this entry before deleting it.
+    await pcConnections.removeForArchiveEntry(id);
+    await execute("DELETE FROM archive_entries WHERE id = ?", [id]);
+  },
+};
+
+/* ------------------------------- player characters ----------------------------- */
+
+export const playerCharacters = {
+  forCampaign: (campaignId: number) =>
+    select<PlayerCharacter>(
+      "SELECT * FROM player_characters WHERE campaign_id = ? ORDER BY position",
+      [campaignId]
+    ),
+
+  create: async (c: {
+    campaign_id: number;
+    name: string;
+    player: string;
+    concept: string;
+    pronouns: string;
+    age: string;
+    image: string | null;
+    expertise: string;
+    carrying: string;
+    left_behind: string;
+    comfort: string;
+    question: string;
+    the_pull: string;
+    overview: string;
+    secret: string;
+    ferry_needs: string;
+  }) => {
+    const [{ p }] = await select<{ p: number }>(
+      "SELECT COALESCE(MAX(position) + 1, 0) AS p FROM player_characters WHERE campaign_id = ?",
+      [c.campaign_id]
+    );
+    const r = await execute(
+      "INSERT INTO player_characters (campaign_id, name, player, concept, pronouns, age, image, expertise, carrying, left_behind, comfort, question, the_pull, overview, secret, ferry_needs, position) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        c.campaign_id,
+        c.name,
+        c.player,
+        c.concept,
+        c.pronouns,
+        c.age,
+        c.image,
+        c.expertise,
+        c.carrying,
+        c.left_behind,
+        c.comfort,
+        c.question,
+        c.the_pull,
+        c.overview,
+        c.secret,
+        c.ferry_needs,
+        p,
+      ]
+    );
+    return r.lastInsertId!;
+  },
+
+  update: (
+    id: number,
+    c: {
+      name: string;
+      player: string;
+      concept: string;
+      pronouns: string;
+      age: string;
+      image: string | null;
+      expertise: string;
+      carrying: string;
+      left_behind: string;
+      comfort: string;
+      question: string;
+      the_pull: string;
+      overview: string;
+      secret: string;
+      ferry_needs: string;
+    }
+  ) =>
+    execute(
+      "UPDATE player_characters SET name = ?, player = ?, concept = ?, pronouns = ?, age = ?, image = ?, expertise = ?, carrying = ?, left_behind = ?, comfort = ?, question = ?, the_pull = ?, overview = ?, secret = ?, ferry_needs = ?, updated_at = ? WHERE id = ?",
+      [
+        c.name,
+        c.player,
+        c.concept,
+        c.pronouns,
+        c.age,
+        c.image,
+        c.expertise,
+        c.carrying,
+        c.left_behind,
+        c.comfort,
+        c.question,
+        c.the_pull,
+        c.overview,
+        c.secret,
+        c.ferry_needs,
+        now(),
+        id,
+      ]
+    ),
+
+  /** Cheap inline writes for the attribute dots and condition chips touched mid-session. */
+  setStats: (
+    id: number,
+    s: { body: number; wits: number; heart: number; resolve: number; conditions: string }
+  ) =>
+    execute(
+      "UPDATE player_characters SET body = ?, wits = ?, heart = ?, resolve = ?, conditions = ?, updated_at = ? WHERE id = ?",
+      [s.body, s.wits, s.heart, s.resolve, s.conditions, now(), id]
+    ),
+
+  reorder: async (orderedIds: number[]) => {
+    for (let i = 0; i < orderedIds.length; i++) {
+      await execute("UPDATE player_characters SET position = ? WHERE id = ?", [i, orderedIds[i]]);
+    }
+  },
+
+  remove: async (id: number) => {
+    // The PC's own connections cascade via FK, but ('pc', id) rows pointing AT
+    // this PC from other passengers are polymorphic (no FK) — clear both directions.
+    await execute("DELETE FROM pc_connections WHERE pc_id = ?", [id]);
+    await execute("DELETE FROM pc_connections WHERE target_kind = 'pc' AND target_id = ?", [id]);
+    await execute("DELETE FROM player_characters WHERE id = ?", [id]);
+  },
+};
+
+export const pcConnections = {
+  forCampaign: (campaignId: number) =>
+    select<PcConnection>(
+      "SELECT c.* FROM pc_connections c JOIN player_characters p ON p.id = c.pc_id WHERE p.campaign_id = ? ORDER BY c.pc_id, c.position",
+      [campaignId]
+    ),
+
+  forPc: (pcId: number) =>
+    select<PcConnection>("SELECT * FROM pc_connections WHERE pc_id = ? ORDER BY position", [pcId]),
+
+  add: async (c: {
+    pc_id: number;
+    target_kind: PcConnectionKind;
+    target_id: number;
+    relationship: string;
+  }) => {
+    const [{ p }] = await select<{ p: number }>(
+      "SELECT COALESCE(MAX(position) + 1, 0) AS p FROM pc_connections WHERE pc_id = ?",
+      [c.pc_id]
+    );
+    const r = await execute(
+      "INSERT INTO pc_connections (pc_id, target_kind, target_id, relationship, position) VALUES (?, ?, ?, ?, ?)",
+      [c.pc_id, c.target_kind, c.target_id, c.relationship, p]
+    );
+    return r.lastInsertId!;
+  },
+
+  updateNote: (id: number, relationship: string) =>
+    execute("UPDATE pc_connections SET relationship = ? WHERE id = ?", [relationship, id]),
+
+  remove: (id: number) => execute("DELETE FROM pc_connections WHERE id = ?", [id]),
+
+  removeForArchiveEntry: (entryId: number) =>
+    execute("DELETE FROM pc_connections WHERE target_kind = 'archive' AND target_id = ?", [
+      entryId,
+    ]),
+};
+
+export const pcLog = {
+  forPc: (pcId: number) =>
+    select<PcLogEntry>(
+      "SELECT * FROM pc_log_entries WHERE pc_id = ? ORDER BY created_at DESC, id DESC",
+      [pcId]
+    ),
+
+  create: async (pcId: number, body: string) => {
+    const r = await execute("INSERT INTO pc_log_entries (pc_id, body, created_at) VALUES (?, ?, ?)", [
+      pcId,
+      body,
+      now(),
+    ]);
+    return r.lastInsertId!;
+  },
+
+  remove: (id: number) => execute("DELETE FROM pc_log_entries WHERE id = ?", [id]),
 };
 
 /* ------------------------------- audio + presets ------------------------------- */
