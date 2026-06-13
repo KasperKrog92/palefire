@@ -106,11 +106,11 @@ export function LiveTable() {
 
       {/* content */}
       <div className="relative flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-2xl px-10 pb-12 pt-14 pf-enter" key={scene.id}>
+        <div className="mx-auto max-w-2xl px-10 pb-12 pt-14 pf-enter 2xl:max-w-4xl 2xl:pt-20" key={scene.id}>
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
             Scene {activeIndex + 1} of {scenes.length}
           </div>
-          <h1 className="mt-2 font-display text-[38px] font-medium leading-[1.15] text-ink">
+          <h1 className="mt-2 font-display text-[38px] font-medium leading-[1.15] text-ink 2xl:text-[48px]">
             {scene.title}
           </h1>
 
@@ -141,7 +141,7 @@ export function LiveTable() {
             </div>
           )}
 
-          <div className="mt-7">
+          <div className="mt-7 2xl:max-w-3xl">
             <Markdown text={scene.notes || "*No notes — sail by feel.*"} className="!text-[15.5px] leading-[1.7]" />
           </div>
         </div>
@@ -226,7 +226,7 @@ export function LiveTable() {
       {/* entry drawer */}
       {openEntry && (
         <div className="absolute inset-0 z-40 flex justify-end bg-black/40" onMouseDown={(e) => e.target === e.currentTarget && setOpenEntry(null)}>
-          <div className="h-full w-[420px] overflow-y-auto border-l border-line-strong bg-panel shadow-[var(--shadow-lift)] pf-modal-in">
+          <div className="h-full w-[420px] overflow-y-auto border-l border-line-strong bg-panel shadow-[var(--shadow-lift)] pf-modal-in 2xl:w-[520px]">
             <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.16em] text-faint">
@@ -303,7 +303,7 @@ function PassengerDrawer({
       className="absolute inset-0 z-40 flex justify-end bg-black/40"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div className="h-full w-[440px] overflow-y-auto border-l border-line-strong bg-panel shadow-[var(--shadow-lift)] pf-modal-in">
+      <div className="h-full w-[440px] overflow-y-auto border-l border-line-strong bg-panel shadow-[var(--shadow-lift)] pf-modal-in 2xl:w-[520px]">
         <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
           <div>
             <div className="text-[10px] uppercase tracking-[0.16em] text-ember">Passenger</div>
@@ -316,7 +316,7 @@ function PassengerDrawer({
         <div className="px-5 py-5">
           <div className="flex items-center gap-4">
             <span
-              className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-raised font-display text-2xl text-ember"
+              className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-raised font-display text-2xl text-ember 2xl:h-28 2xl:w-28"
               style={image ? undefined : { background: fallbackCover(passenger.name) }}
             >
               {image ? (

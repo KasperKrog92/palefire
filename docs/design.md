@@ -38,6 +38,19 @@ The Palefire flame-over-water icon and transparent wordmark are the canonical vi
 identity. Keep their proportions intact. In light mode, the interface may render the
 wordmark as a dark silhouette for contrast without changing the source artwork.
 
+## Large desktop layout
+
+Palefire is primarily used maximized on a 1920x1200 display. At wide breakpoints,
+use the extra room for clearer working structure: broader indexes, additional card
+columns, and side-by-side reference material. Keep prose at a comfortable reading
+measure rather than stretching text across the window.
+
+Passenger sheets should treat character artwork as first-class table reference.
+On large displays, show the full image uncropped beside the sheet while identity,
+stats, notes, and controls remain visible in the adjacent column. Smaller windows
+must retain the compact single-column layout and the 1080x700 minimum remains a
+supported working size.
+
 ## Applying this guidance
 
 When choosing between features or layouts, bias toward live-session usability and low cognitive load. New work should feel native to the existing scene board, archives, passengers, atmosphere mixer, Live Table, and logbook rather than introducing a separate product metaphor.

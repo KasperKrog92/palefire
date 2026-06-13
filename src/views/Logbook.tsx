@@ -34,8 +34,8 @@ export function Logbook() {
     <div className="flex h-full flex-col">
       <ViewHeader title="Logbook" sub="What actually happened, while it is still warm" />
 
-      <div className="flex-1 overflow-y-auto px-8">
-        <div className="mx-auto max-w-2xl pb-8">
+      <div className="flex-1 overflow-y-auto px-8 2xl:px-10">
+        <div className="mx-auto max-w-2xl pb-8 2xl:max-w-3xl">
           {logs.length === 0 ? (
             <EmptyState icon={<Log size={34} />} title="The log is unopened">
               During play, jot what happened — decisions, surprises, promises the table made.
@@ -80,7 +80,7 @@ export function Logbook() {
       </div>
 
       <div className="border-t border-line bg-panel/70 px-8 py-4">
-        <div className="mx-auto flex max-w-2xl items-end gap-3">
+        <div className="mx-auto flex max-w-2xl items-end gap-3 2xl:max-w-3xl">
           <TextArea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}

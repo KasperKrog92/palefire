@@ -53,7 +53,7 @@ export function Atmosphere() {
         </Button>
       </ViewHeader>
 
-      <div className="flex-1 overflow-y-auto px-8 pb-10">
+      <div className="flex-1 overflow-y-auto px-8 pb-10 2xl:px-10">
         {/* live mixer for whatever is currently sounding */}
         {audio.playing && (
           <section className="mb-7 rounded-xl border border-ember/30 bg-panel p-5 shadow-[var(--shadow-card)] pf-enter">
@@ -118,7 +118,7 @@ export function Atmosphere() {
             carry one, so the room changes when the story does.
           </EmptyState>
         ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-5">
             {presets.map((p) => {
               const layers = layersByPreset.get(p.id) ?? [];
               const isActive = audio.presetId === p.id;

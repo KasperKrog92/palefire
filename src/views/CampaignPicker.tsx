@@ -18,20 +18,20 @@ export function CampaignPicker() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-4xl px-8 pb-16">
-        <header className="flex flex-col items-center pt-16 pb-10 text-center pf-enter">
+      <div className="mx-auto max-w-4xl px-8 pb-16 2xl:max-w-6xl">
+        <header className="flex flex-col items-center pt-16 pb-10 text-center pf-enter 2xl:pt-20 2xl:pb-12">
           <img src={palefireLogo} alt="Palefire" className="pf-brand-logo h-24 w-auto max-w-[80vw]" />
           <p className="mt-2 text-sm text-faint">
             Keep the lights low. Keep the table calm.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 2xl:grid-cols-3 2xl:gap-6">
           {campaigns.map((c) => (
             <article
               key={c.id}
               onClick={() => openCampaign(c)}
-              className="group relative h-44 cursor-pointer overflow-hidden rounded-xl border border-line bg-panel shadow-[var(--shadow-card)] transition-all duration-200 hover:border-line-strong hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5 pf-enter"
+              className="group relative h-44 cursor-pointer overflow-hidden rounded-xl border border-line bg-panel shadow-[var(--shadow-card)] transition-all duration-200 hover:border-line-strong hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5 pf-enter 2xl:h-52"
             >
               <div className="absolute inset-0" style={{ background: fallbackCover(c.title) }} />
               <CoverImage name={c.cover_image} dim={0.25} />
@@ -71,7 +71,7 @@ export function CampaignPicker() {
 
           <button
             onClick={() => setEditing("new")}
-            className="flex h-44 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line text-faint transition-colors hover:border-ember-dim hover:text-ember pf-enter"
+            className="flex h-44 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line text-faint transition-colors hover:border-ember-dim hover:text-ember pf-enter 2xl:h-52"
           >
             <Plus size={20} />
             <span className="text-sm">New campaign</span>

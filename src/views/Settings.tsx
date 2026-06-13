@@ -19,9 +19,9 @@ export function Settings() {
     <div className="flex h-full flex-col">
       <ViewHeader title="Settings" sub="A short page, on purpose" />
 
-      <div className="flex-1 overflow-y-auto px-8 pb-10">
-        <div className="mx-auto flex max-w-xl flex-col gap-6">
-          <section className="rounded-lg border border-line bg-panel p-5">
+      <div className="flex-1 overflow-y-auto px-8 pb-10 2xl:px-10">
+        <div className="mx-auto grid max-w-xl gap-6 2xl:max-w-5xl 2xl:grid-cols-2">
+          <section className="rounded-lg border border-line bg-panel p-5 2xl:col-span-2">
             <h2 className="mb-4 text-[11px] font-medium uppercase tracking-[0.16em] text-faint">
               Appearance
             </h2>
@@ -80,7 +80,7 @@ export function Settings() {
             </p>
           </section>
 
-          <div className="flex items-center justify-center gap-2 pb-4 pt-2 text-faint">
+          <div className="flex items-center justify-center gap-2 pb-4 pt-2 text-faint 2xl:col-span-2">
             <Flame size={13} className="text-ember-dim" />
             <span className="text-[12px]">Palefire 0.1.0 — built for slow crossings</span>
           </div>

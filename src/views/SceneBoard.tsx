@@ -74,7 +74,7 @@ export function SceneBoard() {
         </Button>
       </ViewHeader>
 
-      <div className="flex-1 overflow-y-auto px-8 pb-10">
+      <div className="flex-1 overflow-y-auto px-8 pb-10 2xl:px-10">
         {scenes.length === 0 ? (
           <EmptyState icon={<Cards size={36} />} title="The board is bare">
             Scenes are your index cards for the night — notes, atmosphere, and the people in the
@@ -83,7 +83,7 @@ export function SceneBoard() {
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={scenes.map((s) => s.id)} strategy={rectSortingStrategy}>
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 2xl:gap-6">
                 {scenes.map((s, i) => (
                   <SceneCard
                     key={s.id}
@@ -160,7 +160,7 @@ function SceneCard({
         rotate: isDragging ? "0deg" : `${lean}deg`,
         zIndex: isDragging ? 30 : undefined,
       }}
-      className={`group relative flex min-h-[176px] flex-col overflow-hidden rounded-lg border bg-panel shadow-[var(--shadow-card)] transition-shadow duration-200 pf-enter ${
+      className={`group relative flex min-h-[176px] flex-col overflow-hidden rounded-lg border bg-panel shadow-[var(--shadow-card)] transition-shadow duration-200 pf-enter 2xl:min-h-[210px] ${
         isDragging ? "opacity-80 shadow-[var(--shadow-lift)]" : "hover:shadow-[var(--shadow-lift)]"
       } ${active ? "border-ember/60" : "border-line hover:border-line-strong"}`}
     >

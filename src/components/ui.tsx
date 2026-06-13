@@ -125,9 +125,9 @@ export function ViewHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="flex items-end justify-between gap-4 px-8 pt-7 pb-5">
+    <header className="flex items-end justify-between gap-4 px-8 pt-7 pb-5 2xl:px-10 2xl:pt-8 2xl:pb-6">
       <div>
-        <h1 className="font-display text-[26px] leading-tight text-ink font-medium">{title}</h1>
+        <h1 className="font-display text-[26px] leading-tight text-ink font-medium 2xl:text-[30px]">{title}</h1>
         {sub && <p className="text-sm text-faint mt-0.5">{sub}</p>}
       </div>
       <div className="flex items-center gap-2 shrink-0">{children}</div>

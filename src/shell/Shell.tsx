@@ -35,7 +35,7 @@ export function Shell() {
 
   return (
     <div className="flex h-full">
-      <aside className="flex w-[218px] shrink-0 flex-col border-r border-line bg-panel/70">
+      <aside className="flex w-[218px] shrink-0 flex-col border-r border-line bg-panel/70 2xl:w-[240px]">
         <div className="px-4 pt-4 pb-1">
           <img src={palefireLogo} alt="Palefire" className="pf-brand-logo h-9 w-auto max-w-full" />
         </div>

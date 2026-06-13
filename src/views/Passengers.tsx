@@ -117,8 +117,8 @@ export function Passengers() {
       </ViewHeader>
 
       <div className="flex flex-1 overflow-hidden border-t border-line">
-        <div className="flex w-[300px] shrink-0 flex-col border-r border-line bg-panel/40">
-          <div className="px-4 pb-2 pt-4 text-[10px] uppercase tracking-[0.16em] text-faint">
+        <div className="flex w-[300px] shrink-0 flex-col border-r border-line bg-panel/40 2xl:w-[340px]">
+          <div className="px-4 pb-2 pt-4 text-[10px] uppercase tracking-[0.16em] text-faint 2xl:px-5">
             {ordered.length} aboard
           </div>
           <div className="flex-1 overflow-y-auto px-2 pb-3">
@@ -227,8 +227,8 @@ function PassengerRow({
       >
         <Grip size={13} />
       </button>
-      <button onClick={onSelect} className="flex min-w-0 flex-1 items-center gap-2.5 py-2 pr-2 text-left">
-        <Portrait name={passenger.name} image={image} className="h-10 w-10 text-sm" />
+      <button onClick={onSelect} className="flex min-w-0 flex-1 items-center gap-2.5 py-2 pr-2 text-left 2xl:gap-3 2xl:py-2.5">
+        <Portrait name={passenger.name} image={image} className="h-10 w-10 text-sm 2xl:h-12 2xl:w-12" />
         <span className="min-w-0">
           <span className="block truncate text-sm text-ink">{passenger.name}</span>
           {subtitle && <span className="mt-0.5 block truncate text-[11px] text-faint">{subtitle}</span>}
@@ -258,95 +258,126 @@ function PassengerSheet({
   useEffect(() => setCurtainOpen(false), [passenger.id]);
 
   return (
-    <div className="mx-auto max-w-3xl px-8 py-8 pf-enter" key={passenger.id}>
-      <div className="flex items-start gap-5">
-        <Portrait name={passenger.name} image={image} className="h-24 w-24 text-2xl" />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="font-display text-[28px] leading-tight text-ink">{passenger.name}</h2>
-              {[passenger.pronouns, passenger.age].some(Boolean) && (
-                <p className="mt-1 text-[13px] text-faint">
-                  {[passenger.pronouns, passenger.age].filter(Boolean).join(" · ")}
-                </p>
-              )}
-              {passenger.concept && <p className="mt-2 text-sm text-muted">{passenger.concept}</p>}
-              {passenger.player && (
-                <p className="mt-1 text-[12px] text-faint">Played by {passenger.player}</p>
-              )}
-            </div>
-            <div className="flex shrink-0 gap-1.5">
-              <Button variant="ghost" onClick={onEdit}>
-                <Pencil size={13} /> Edit
-              </Button>
-              <Button variant="danger" onClick={onDelete} title="Delete passenger">
-                <Trash size={13} />
-              </Button>
+    <div className="mx-auto max-w-3xl px-8 py-8 pf-enter 2xl:max-w-[1280px] 2xl:px-10 2xl:py-10" key={passenger.id}>
+      <div className="2xl:grid 2xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] 2xl:items-start 2xl:gap-12">
+        <div className="min-w-0">
+          <div className="flex items-start gap-5">
+            <Portrait name={passenger.name} image={image} className="h-24 w-24 text-2xl 2xl:hidden" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="font-display text-[28px] leading-tight text-ink 2xl:text-[34px]">{passenger.name}</h2>
+                  {[passenger.pronouns, passenger.age].some(Boolean) && (
+                    <p className="mt-1 text-[13px] text-faint">
+                      {[passenger.pronouns, passenger.age].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
+                  {passenger.concept && <p className="mt-2 text-sm text-muted 2xl:text-[15px]">{passenger.concept}</p>}
+                  {passenger.player && (
+                    <p className="mt-1 text-[12px] text-faint">Played by {passenger.player}</p>
+                  )}
+                </div>
+                <div className="flex shrink-0 gap-1.5">
+                  <Button variant="ghost" onClick={onEdit}>
+                    <Pencil size={13} /> Edit
+                  </Button>
+                  <Button variant="danger" onClick={onDelete} title="Delete passenger">
+                    <Trash size={13} />
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <Stats passenger={passenger} />
+          <Stats passenger={passenger} />
 
-      <SheetSection title="Overview">
-        <Markdown
-          text={passenger.overview || "*There is room here for who they are, and what binds them to the crossing.*"}
-          className="text-[14.5px]"
-        />
-      </SheetSection>
-
-      <Boarding passenger={passenger} />
-
-      <Connections
-        passenger={passenger}
-        connections={connections}
-        entries={entries}
-        passengers={playerCharacters}
-      />
-
-      {linkedScenes.length > 0 && (
-        <SheetSection title="Appears in" icon={<Cards size={12} />}>
-          <div className="flex flex-wrap gap-1.5">
-            {linkedScenes.map((title) => (
-              <Chip key={title} tone="sea">
-                {title}
-              </Chip>
-            ))}
-          </div>
-        </SheetSection>
-      )}
-
-      {(passenger.secret || passenger.ferry_needs) && (
-        <section className="mt-8 overflow-hidden rounded-lg border border-ember/20 bg-ember/[0.035]">
-          <button
-            onClick={() => setCurtainOpen((open) => !open)}
-            className="flex w-full items-center justify-between px-4 py-3 text-left"
-          >
-            <span>
-              <span className="block text-[10px] uppercase tracking-[0.16em] text-ember">
-                Behind the curtain
-              </span>
-              <span className="mt-0.5 block text-[12px] text-faint">GM-only notes, hidden by default</span>
-            </span>
-            <ChevronRight
-              size={15}
-              className={`text-faint transition-transform ${curtainOpen ? "rotate-90" : ""}`}
+          <SheetSection title="Overview">
+            <Markdown
+              text={passenger.overview || "*There is room here for who they are, and what binds them to the crossing.*"}
+              className="text-[14.5px]"
             />
-          </button>
-          {curtainOpen && (
-            <div className="grid gap-5 border-t border-ember/15 px-4 py-4 md:grid-cols-2">
-              {passenger.secret && <QuietFact label="Secret" value={passenger.secret} />}
-              {passenger.ferry_needs && (
-                <QuietFact label="What the ferry may need" value={passenger.ferry_needs} />
-              )}
-            </div>
-          )}
-        </section>
-      )}
+          </SheetSection>
 
-      <PassengerLog passengerId={passenger.id} />
+          <Boarding passenger={passenger} />
+
+          <Connections
+            passenger={passenger}
+            connections={connections}
+            entries={entries}
+            passengers={playerCharacters}
+          />
+
+          {linkedScenes.length > 0 && (
+            <SheetSection title="Appears in" icon={<Cards size={12} />}>
+              <div className="flex flex-wrap gap-1.5">
+                {linkedScenes.map((title) => (
+                  <Chip key={title} tone="sea">
+                    {title}
+                  </Chip>
+                ))}
+              </div>
+            </SheetSection>
+          )}
+
+          {(passenger.secret || passenger.ferry_needs) && (
+            <section className="mt-8 overflow-hidden rounded-lg border border-ember/20 bg-ember/[0.035]">
+              <button
+                onClick={() => setCurtainOpen((open) => !open)}
+                className="flex w-full items-center justify-between px-4 py-3 text-left"
+              >
+                <span>
+                  <span className="block text-[10px] uppercase tracking-[0.16em] text-ember">
+                    Behind the curtain
+                  </span>
+                  <span className="mt-0.5 block text-[12px] text-faint">GM-only notes, hidden by default</span>
+                </span>
+                <ChevronRight
+                  size={15}
+                  className={`text-faint transition-transform ${curtainOpen ? "rotate-90" : ""}`}
+                />
+              </button>
+              {curtainOpen && (
+                <div className="grid gap-5 border-t border-ember/15 px-4 py-4 md:grid-cols-2">
+                  {passenger.secret && <QuietFact label="Secret" value={passenger.secret} />}
+                  {passenger.ferry_needs && (
+                    <QuietFact label="What the ferry may need" value={passenger.ferry_needs} />
+                  )}
+                </div>
+              )}
+            </section>
+          )}
+
+          <PassengerLog passengerId={passenger.id} />
+        </div>
+
+        <PassengerArtwork name={passenger.name} image={image} />
+      </div>
     </div>
+  );
+}
+
+function PassengerArtwork({ name, image }: { name: string; image: string | null }) {
+  return (
+    <aside className="sticky top-8 hidden 2xl:block">
+      <div
+        className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl border border-line-strong bg-bg-deep/45 font-display text-7xl text-ember shadow-[var(--shadow-card)]"
+        style={image ? undefined : { background: fallbackCover(name) }}
+      >
+        {image ? (
+          <img
+            src={image}
+            alt={`${name} portrait`}
+            className="h-full w-full object-contain"
+            draggable={false}
+          />
+        ) : (
+          name.trim().charAt(0).toUpperCase() || "?"
+        )}
+      </div>
+      <p className="mt-3 text-center text-[10px] uppercase tracking-[0.16em] text-faint">
+        Passenger portrait
+      </p>
+    </aside>
   );
 }
 

@@ -75,7 +75,7 @@ export function Archives() {
 
       <div className="flex flex-1 gap-0 overflow-hidden border-t border-line">
         {/* index column */}
-        <div className="flex w-[300px] shrink-0 flex-col border-r border-line bg-panel/40">
+        <div className="flex w-[300px] shrink-0 flex-col border-r border-line bg-panel/40 2xl:w-[340px]">
           <div className="flex flex-wrap gap-1 px-3 pt-3">
             {(["all", ...ARCHIVE_CATEGORIES.map((c) => c.id)] as Filter[]).map((f) => (
               <button
@@ -188,13 +188,13 @@ function EntryView({
 }) {
   const img = useStoredImage(entry.image);
   return (
-    <div className="mx-auto max-w-2xl px-8 py-8 pf-enter" key={entry.id}>
+    <div className="mx-auto max-w-2xl px-8 py-8 pf-enter 2xl:max-w-5xl 2xl:px-10 2xl:py-10" key={entry.id}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-[10px] uppercase tracking-[0.16em] text-faint">
             {ARCHIVE_CATEGORIES.find((c) => c.id === entry.category)?.label}
           </div>
-          <h2 className="mt-1 font-display text-[26px] leading-tight text-ink">{entry.title}</h2>
+          <h2 className="mt-1 font-display text-[26px] leading-tight text-ink 2xl:text-[32px]">{entry.title}</h2>
           {entry.tags && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {parseTags(entry.tags).map((t) => (
@@ -214,12 +214,12 @@ function EntryView({
       </div>
 
       {img && (
-        <div className="mt-5 overflow-hidden rounded-lg border border-line shadow-[var(--shadow-card)]">
-          <img src={img} alt="" className="max-h-72 w-full object-cover" draggable={false} />
+        <div className="mt-5 flex max-h-[420px] justify-center overflow-hidden rounded-lg border border-line bg-bg-deep/30 shadow-[var(--shadow-card)]">
+          <img src={img} alt="" className="max-h-72 w-full object-cover 2xl:max-h-[420px] 2xl:object-contain" draggable={false} />
         </div>
       )}
 
-      <div className="mt-5">
+      <div className="mt-5 2xl:max-w-3xl">
         <Markdown text={entry.body || "*The page is blank.*"} className="text-[14.5px]" />
       </div>
 
