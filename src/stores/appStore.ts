@@ -9,7 +9,8 @@ export type View =
   | "atmosphere"
   | "live"
   | "logbook"
-  | "settings";
+  | "settings"
+  | "solo-crossing";
 
 export type Theme = "dark" | "light";
 
@@ -21,6 +22,7 @@ interface AppState {
   view: View;
   /** cross-view jump target: a view consumes this on mount/update to select an item, then clears it */
   pendingFocus: { view: View; id: number } | null;
+  soloTarget: { passengerId: number; crossingId: number | null } | null;
   theme: Theme;
   defaultFadeMs: number;
 
@@ -33,6 +35,7 @@ interface AppState {
   /** navigate to a view and ask it to focus the item with the given id */
   focus: (view: View, id: number) => void;
   clearFocus: () => void;
+  openSoloCrossing: (passengerId: number, crossingId?: number | null) => void;
   setTheme: (t: Theme) => Promise<void>;
   setDefaultFadeMs: (ms: number) => Promise<void>;
   hydrateSettings: () => Promise<void>;
@@ -45,6 +48,7 @@ export const useApp = create<AppState>((set, get) => ({
   campaign: null,
   view: "scenes",
   pendingFocus: null,
+  soloTarget: null,
   theme: "dark",
   defaultFadeMs: 2500,
 
@@ -54,9 +58,9 @@ export const useApp = create<AppState>((set, get) => ({
     set({ campaigns: await campaignRepo.all() });
   },
 
-  openCampaign: (c) => set({ campaign: c, view: "scenes" }),
+  openCampaign: (c) => set({ campaign: c, view: "scenes", soloTarget: null }),
 
-  closeCampaign: () => set({ campaign: null }),
+  closeCampaign: () => set({ campaign: null, soloTarget: null }),
 
   refreshCampaign: async () => {
     const cur = get().campaign;
@@ -70,6 +74,9 @@ export const useApp = create<AppState>((set, get) => ({
   focus: (view, id) => set({ view, pendingFocus: { view, id } }),
 
   clearFocus: () => set({ pendingFocus: null }),
+
+  openSoloCrossing: (passengerId, crossingId = null) =>
+    set({ view: "solo-crossing", soloTarget: { passengerId, crossingId } }),
 
   setTheme: async (t) => {
     set({ theme: t });

@@ -6,6 +6,11 @@ dist/
 data/palefire.db-wal
 data/palefire.db-shm
 
+# Solo Crossing is private runtime state and never belongs in the campaign repo.
+data/solo.db
+data/solo.db-wal
+data/solo.db-shm
+
 # Tauri / Rust
 src-tauri/target/
 src-tauri/gen/

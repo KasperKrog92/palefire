@@ -22,6 +22,7 @@ The one sanctioned exception to the otherwise local-only, no-AI stance is **Solo
 - `Cargo.lock` pins `time = 0.3.47` (0.3.48 breaks `cookie 0.18`). Don't bump until upstream fixes.
 - Boot must stay single-flight (`bootPromise` in `App.tsx`) - StrictMode double-runs effects and would double-seed.
 - Runtime project data lives directly in the repository: `data/palefire.db`, `data/images/`, and `data/audio/`. The Rust shell exposes the absolute clone-specific paths and dynamically scopes filesystem and asset access to `data/`.
+- Solo Crossing private state uses a second, gitignored `data/solo.db` with its own migration chain under `src-tauri/solo-migrations/`. Its frontend connection is lazy: ordinary Palefire boot and core views must not create or open it.
 - Audio file `source` column: `file:<name>`, an imported recording stored under `data/audio`. (Palefire is recorded-audio only; the former procedurally generated `builtin:` loops were removed in migration `003_remove_builtin_audio.sql`.)
 - SQLite `data/palefire.db-wal` and `data/palefire.db-shm` are ignored runtime sidecars. Palefire must be closed before Git operations that include the database. The tracked `.githooks/pre-commit` guard blocks committing `data/palefire.db` while a non-empty `-wal` exists; activate it per clone with `git config core.hooksPath .githooks`.
 

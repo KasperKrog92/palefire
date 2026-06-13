@@ -43,6 +43,7 @@ import { useStoredImage } from "../components/StoredImage";
 import { Button, Chip, EmptyState, Field, Input, Select, TextArea, ViewHeader } from "../components/ui";
 import {
   Cards,
+  Anchor,
   ChevronRight,
   Grip,
   LinkIcon,
@@ -252,6 +253,7 @@ function PassengerSheet({
   onDelete: () => void;
 }) {
   const { entries, playerCharacters } = useData();
+  const openSoloCrossing = useApp((state) => state.openSoloCrossing);
   const image = useStoredImage(passenger.image);
   const [curtainOpen, setCurtainOpen] = useState(false);
 
@@ -278,6 +280,9 @@ function PassengerSheet({
                   )}
                 </div>
                 <div className="flex shrink-0 gap-1.5">
+                  <Button variant="subtle" onClick={() => openSoloCrossing(passenger.id)}>
+                    <Anchor size={13} /> Take a solo crossing
+                  </Button>
                   <Button variant="ghost" onClick={onEdit}>
                     <Pencil size={13} /> Edit
                   </Button>

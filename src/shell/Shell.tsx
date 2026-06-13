@@ -18,6 +18,7 @@ import { Atmosphere } from "../views/Atmosphere";
 import { LiveTable } from "../views/LiveTable";
 import { Logbook } from "../views/Logbook";
 import { Settings } from "../views/Settings";
+import { SoloCrossing } from "../views/SoloCrossing";
 import palefireLogo from "../assets/palefire-logo.png";
 
 const NAV: { view: View; label: string; icon: ReactNode }[] = [
@@ -87,6 +88,7 @@ export function Shell() {
         {view === "live" && <LiveTable />}
         {view === "logbook" && <Logbook />}
         {view === "settings" && <Settings />}
+        {view === "solo-crossing" && <SoloCrossing />}
       </main>
     </div>
   );

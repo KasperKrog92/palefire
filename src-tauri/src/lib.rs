@@ -10,6 +10,8 @@ struct ProjectPaths {
     data_dir: String,
     database_path: String,
     database_url: String,
+    solo_database_path: String,
+    solo_database_url: String,
 }
 
 fn project_data_dir() -> PathBuf {
@@ -22,10 +24,13 @@ fn project_data_dir() -> PathBuf {
 fn project_paths_value() -> ProjectPaths {
     let data_dir = project_data_dir();
     let database_path = data_dir.join("palefire.db");
+    let solo_database_path = data_dir.join("solo.db");
     ProjectPaths {
         data_dir: data_dir.to_string_lossy().into_owned(),
         database_path: database_path.to_string_lossy().into_owned(),
         database_url: format!("sqlite:{}", database_path.to_string_lossy()),
+        solo_database_path: solo_database_path.to_string_lossy().into_owned(),
+        solo_database_url: format!("sqlite:{}", solo_database_path.to_string_lossy()),
     }
 }
 
@@ -74,6 +79,17 @@ pub fn run() {
             kind: MigrationKind::Up,
         },
     ];
+    let solo_initial: &'static str = Box::leak(
+        include_str!("../solo-migrations/001_initial.sql")
+            .replace("\r\n", "\n")
+            .into_boxed_str(),
+    );
+    let solo_migrations = vec![Migration {
+        version: 1,
+        description: "solo_crossing_initial_schema",
+        sql: solo_initial,
+        kind: MigrationKind::Up,
+    }];
     let paths = project_paths_value();
     let data_dir = PathBuf::from(&paths.data_dir);
     fs::create_dir_all(data_dir.join("images")).expect("failed to create data/images");
@@ -85,6 +101,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations(&paths.database_url, migrations)
+                .add_migrations(&paths.solo_database_url, solo_migrations)
                 .build(),
         )
         .setup(move |app| {

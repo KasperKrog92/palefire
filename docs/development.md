@@ -32,16 +32,17 @@ Palefire reads and writes its working data directly in the clone:
 - `data/images/`
 - `data/audio/`
 
-Solo Crossing will add `data/solo.db` as a separate, gitignored SQLite database.
+Solo Crossing uses `data/solo.db` as a separate, gitignored SQLite database.
 Unlike `palefire.db`, it is private runtime state and must never be committed. Its
-own migration chain and lazy connection are specified in
-[`plans/solo-crossing.md`](plans/solo-crossing.md); this paragraph records the
-storage boundary before implementation, not an existing runtime capability.
+own migration chain lives under `src-tauri/solo-migrations/`, is registered beside
+the campaign migrations in `src-tauri/src/lib.rs`, and is opened lazily through
+`src/solo/db.ts` only when the Solo Crossing view is entered.
 
 The personal Anthropic API key is read from gitignored `.env.local` as
 `VITE_ANTHROPIC_API_KEY`. Never place it in either database. Because Vite embeds
 `VITE_*` values in renderer bundles, an installer built with the key present must
-not be distributed.
+not be distributed. Copy the variable names from `.env.example`; the optional
+`VITE_ANTHROPIC_MODEL` overrides the plan's default model without a source edit.
 
 `src-tauri/src/lib.rs` derives the absolute `data/` path from `CARGO_MANIFEST_DIR`,
 registers migrations against that database URL, exposes the paths through the

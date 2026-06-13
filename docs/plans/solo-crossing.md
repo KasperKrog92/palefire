@@ -1,6 +1,6 @@
 # Plan — Solo Crossing (conversational play between sessions)
 
-Status: **approved implementation plan** — not yet implemented.
+Status: **Phase 1 complete** — local crossing lifecycle is implemented; AI conversation has not started.
 Last revised: 2026-06-13
 Scope: add one deliberately bounded AI feature to the owner's personal Palefire
 clone without changing the local-first behavior of the core campaign tools.
@@ -334,7 +334,8 @@ API details in this plan were checked on 2026-06-13 against Anthropic's official
 documentation. Re-check those pages at implementation time; model IDs, prices, and
 feature flags are not durable product constants.
 
-- **Model:** default `claude-opus-4-8` for prose quality. Allow an optional
+- **Model:** default `claude-sonnet-4-6`; it is the better balance of prose quality,
+  latency, and recurring-session cost for this feature. Allow an optional
   `VITE_ANTHROPIC_MODEL` override so model changes do not require source edits.
   Settings may offer known model IDs later, but the environment override is enough
   for v1 and avoids treating a fast-moving model list as durable UI.
@@ -526,6 +527,8 @@ promotion until the plain conversation loop feels right.
 
 ### Phase 0 — Documentation and local configuration
 
+Status: **complete (2026-06-13)**.
+
 Files: `AGENTS.md`, `docs/design.md`, `docs/development.md`, `.gitignore`,
 `.env.example`, `src/vite-env.d.ts`, `package.json`.
 
@@ -539,6 +542,8 @@ Exit criteria: docs no longer contradict the approved feature; a clean clone can
 discover the required local variables without containing a secret.
 
 ### Phase 1 — Separate store and navigation shell
+
+Status: **complete (2026-06-13)**.
 
 Files: `src-tauri/solo-migrations/001_initial.sql`, `src-tauri/src/lib.rs`,
 `src/projectPaths.ts`, `src/solo/{types,db,repo}.ts`,
@@ -687,8 +692,8 @@ Verification for every phase:
 
 These do not block implementation:
 
-1. Is `claude-opus-4-8` worth its cost for this voice, or does a cheaper model give
-   the preferred restraint and latency?
+1. Does `claude-sonnet-4-6` produce the preferred voice and restraint, or is an
+   occasional Opus comparison worth the additional cost?
 2. How many recent turns should remain verbatim before rolling summary compaction?
 3. Should a passenger have one canonical ongoing crossing or several named crossings?
    The schema supports several; the UI should initially favor resuming the latest.
@@ -706,7 +711,7 @@ untouched. Keep transcripts in a separate gitignored store; let only owner-confi
 promotions touch the shared campaign.
 Build the narrator's restraint from the campaign's own canon — the seed already
 contains its anti-slop guide. Suggest atmosphere and images, never apply them.
-Default to Anthropic (`claude-opus-4-8`) behind a thin provider interface. Read the
+Default to Anthropic (`claude-sonnet-4-6`) behind a thin provider interface. Read the
 key from `.env.local`, never from a database or UI field, and never distribute a
 renderer build containing the owner's key. Ship the conversation MVP first and judge
 the tone before building memory, canon promotion, or suggestions.

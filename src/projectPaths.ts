@@ -4,6 +4,8 @@ export type ProjectPaths = {
   dataDir: string;
   databasePath: string;
   databaseUrl: string;
+  soloDatabasePath: string;
+  soloDatabaseUrl: string;
 };
 
 let pathsPromise: Promise<ProjectPaths> | null = null;
