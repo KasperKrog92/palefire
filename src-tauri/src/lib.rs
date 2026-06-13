@@ -44,12 +44,25 @@ pub fn run() {
             .replace("\r\n", "\n")
             .into_boxed_str(),
     );
-    let migrations = vec![Migration {
-        version: 1,
-        description: "initial_schema",
-        sql: initial,
-        kind: MigrationKind::Up,
-    }];
+    let pcs: &'static str = Box::leak(
+        include_str!("../migrations/002_player_characters.sql")
+            .replace("\r\n", "\n")
+            .into_boxed_str(),
+    );
+    let migrations = vec![
+        Migration {
+            version: 1,
+            description: "initial_schema",
+            sql: initial,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 2,
+            description: "player_characters",
+            sql: pcs,
+            kind: MigrationKind::Up,
+        },
+    ];
     let paths = project_paths_value();
     let data_dir = PathBuf::from(&paths.data_dir);
     fs::create_dir_all(data_dir.join("images")).expect("failed to create data/images");
