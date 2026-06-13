@@ -4,6 +4,7 @@ Local-first Windows desktop app for tabletop GMs (Tauri v2 + React 19 + TS + Tai
 
 ## Commands
 
+- `Start Palefire.cmd` - double-clickable Windows launcher for Tauri dev with Cargo and WebView2 debugging configured
 - `npm run tauri dev` - run the app (cargo must be on PATH: `%USERPROFILE%\.cargo\bin`)
 - `npm run typecheck` - TS check (run before committing)
 - `npm run tauri build` - NSIS installer in `src-tauri/target/release/bundle/nsis/`
@@ -11,7 +12,7 @@ Local-first Windows desktop app for tabletop GMs (Tauri v2 + React 19 + TS + Tai
 
 ## Architecture in one breath
 
-`src-tauri` is a thin shell: plugins (sql/fs/dialog) + one SQL migration. All logic is frontend: `src/db/repo.ts` (SQL), `src/audio/engine.ts` (Web Audio mixing/crossfades, singleton), `src/stores/*` (zustand: app/data/audio), `src/views/*` (one file per sidebar view), `src/db/seed.ts` (Nox Trajectus campaign content).
+`src-tauri` is a thin shell: plugins (sql/fs/dialog) + numbered SQL migrations. All logic is frontend: `src/db/repo.ts` (SQL), `src/audio/engine.ts` (Web Audio mixing/crossfades, singleton), `src/stores/*` (zustand: app/data/audio), `src/views/*` (one file per sidebar view, including first-class Passengers), `src/db/seed.ts` (Nox Trajectus campaign content).
 
 ## Invariants
 

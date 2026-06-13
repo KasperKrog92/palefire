@@ -47,6 +47,17 @@ export const Book = (p: P) =>
     </>
   );
 
+export const Passengers = (p: P) =>
+  base(
+    p,
+    <>
+      <circle cx="9" cy="7.5" r="3" />
+      <path d="M3.5 20v-1.5A5.5 5.5 0 0 1 9 13a5.5 5.5 0 0 1 5.5 5.5V20" />
+      <circle cx="17" cy="9" r="2.3" />
+      <path d="M15.5 14.3a4.5 4.5 0 0 1 5 4.5V20" />
+    </>
+  );
+
 export const Waves = (p: P) =>
   base(
     p,

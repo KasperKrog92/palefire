@@ -19,12 +19,23 @@ import { fallbackCover } from "../components/cover";
 import { CoverImage } from "../components/StoredImage";
 import { Confirm } from "../components/Confirm";
 import { Button, Chip, EmptyState, ViewHeader } from "../components/ui";
-import { Cards, Copy, Grip, Lantern, LinkIcon, Pencil, Plus, Trash, Waves } from "../components/icons";
+import {
+  Cards,
+  Copy,
+  Grip,
+  Lantern,
+  LinkIcon,
+  Passengers,
+  Pencil,
+  Plus,
+  Trash,
+  Waves,
+} from "../components/icons";
 import { SceneEditor } from "./SceneEditor";
 
 export function SceneBoard() {
   const { campaign } = useApp();
-  const { scenes, links, presets, reloadScenes, setScenesOptimistic } = useData();
+  const { scenes, links, pcLinks, presets, reloadScenes, setScenesOptimistic } = useData();
   const [editing, setEditing] = useState<Scene | "new" | null>(null);
   const [deleting, setDeleting] = useState<Scene | null>(null);
 
@@ -35,6 +46,11 @@ export function SceneBoard() {
     for (const l of links) m.set(l.scene_id, (m.get(l.scene_id) ?? 0) + 1);
     return m;
   }, [links]);
+  const castCounts = useMemo(() => {
+    const counts = new Map<number, number>();
+    for (const link of pcLinks) counts.set(link.scene_id, (counts.get(link.scene_id) ?? 0) + 1);
+    return counts;
+  }, [pcLinks]);
 
   const presetNames = useMemo(() => new Map(presets.map((p) => [p.id, p.name])), [presets]);
 
@@ -76,6 +92,7 @@ export function SceneBoard() {
                     active={campaign?.active_scene_id === s.id}
                     presetName={s.preset_id != null ? presetNames.get(s.preset_id) ?? null : null}
                     linkCount={linkCounts.get(s.id) ?? 0}
+                    castCount={castCounts.get(s.id) ?? 0}
                     onEdit={() => setEditing(s)}
                     onDelete={() => setDeleting(s)}
                   />
@@ -112,6 +129,7 @@ function SceneCard({
   active,
   presetName,
   linkCount,
+  castCount,
   onEdit,
   onDelete,
 }: {
@@ -120,6 +138,7 @@ function SceneCard({
   active: boolean;
   presetName: string | null;
   linkCount: number;
+  castCount: number;
   onEdit: () => void;
   onDelete: () => void;
 }) {
@@ -190,6 +209,11 @@ function SceneCard({
           {linkCount > 0 && (
             <Chip>
               <LinkIcon size={11} /> {linkCount}
+            </Chip>
+          )}
+          {castCount > 0 && (
+            <Chip tone="ember">
+              <Passengers size={11} /> {castCount}
             </Chip>
           )}
         </div>

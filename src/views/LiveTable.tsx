@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import type { ArchiveEntry } from "../types";
-import { ARCHIVE_CATEGORIES } from "../types";
+import type { ArchiveEntry, PlayerCharacter } from "../types";
+import { ARCHIVE_CATEGORIES, PC_ATTRIBUTES, PC_CONDITIONS, parseTags } from "../types";
 import { useApp } from "../stores/appStore";
 import { useData } from "../stores/dataStore";
 import { useAudio } from "../stores/audioStore";
 import { useActivateScene } from "../hooks/useActivateScene";
 import { fallbackCover } from "../components/cover";
-import { CoverImage } from "../components/StoredImage";
+import { CoverImage, useStoredImage } from "../components/StoredImage";
 import { Markdown } from "../components/Markdown";
 import { Button, EmptyState } from "../components/ui";
 import {
@@ -20,11 +20,21 @@ import {
 } from "../components/icons";
 
 export function LiveTable() {
-  const { campaign, defaultFadeMs } = useApp();
-  const { scenes, links, entries, presets, layersByPreset, audioFiles } = useData();
+  const { campaign, defaultFadeMs, focus } = useApp();
+  const {
+    scenes,
+    links,
+    pcLinks,
+    entries,
+    playerCharacters,
+    presets,
+    layersByPreset,
+    audioFiles,
+  } = useData();
   const audio = useAudio();
   const activate = useActivateScene();
   const [openEntry, setOpenEntry] = useState<ArchiveEntry | null>(null);
+  const [openPassenger, setOpenPassenger] = useState<PlayerCharacter | null>(null);
 
   const activeIndex = scenes.findIndex((s) => s.id === campaign?.active_scene_id);
   const scene = activeIndex >= 0 ? scenes[activeIndex] : null;
@@ -39,6 +49,11 @@ export function LiveTable() {
     const ids = new Set(links.filter((l) => l.scene_id === scene.id).map((l) => l.entry_id));
     return entries.filter((e) => ids.has(e.id));
   }, [scene, links, entries]);
+  const linkedPassengers = useMemo(() => {
+    if (!scene) return [];
+    const ids = new Set(pcLinks.filter((link) => link.scene_id === scene.id).map((link) => link.pc_id));
+    return playerCharacters.filter((passenger) => ids.has(passenger.id));
+  }, [scene, pcLinks, playerCharacters]);
 
   const go = async (dir: -1 | 1) => {
     if (scenes.length === 0) return;
@@ -51,7 +66,7 @@ export function LiveTable() {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) return;
-      if (openEntry) return;
+      if (openEntry || openPassenger) return;
       if (e.key === "ArrowRight") void go(1);
       else if (e.key === "ArrowLeft") void go(-1);
       else if (e.key === " ") {
@@ -99,8 +114,20 @@ export function LiveTable() {
             {scene.title}
           </h1>
 
+          {linkedPassengers.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              {linkedPassengers.map((passenger) => (
+                <PassengerChip
+                  key={passenger.id}
+                  passenger={passenger}
+                  onClick={() => setOpenPassenger(passenger)}
+                />
+              ))}
+            </div>
+          )}
+
           {linkedEntries.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5">
+            <div className={`${linkedPassengers.length > 0 ? "mt-3" : "mt-4"} flex flex-wrap gap-1.5`}>
               {linkedEntries.map((e) => (
                 <button
                   key={e.id}
@@ -217,6 +244,141 @@ export function LiveTable() {
           </div>
         </div>
       )}
+
+      {openPassenger && (
+        <PassengerDrawer
+          passenger={openPassenger}
+          onClose={() => setOpenPassenger(null)}
+          onOpenProfile={() => {
+            setOpenPassenger(null);
+            focus("passengers", openPassenger.id);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function PassengerChip({
+  passenger,
+  onClick,
+}: {
+  passenger: PlayerCharacter;
+  onClick: () => void;
+}) {
+  const image = useStoredImage(passenger.image);
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 rounded-full border border-ember/30 bg-panel/80 py-1 pl-1 pr-3 text-[13px] text-ink shadow-[var(--shadow-card)] backdrop-blur-sm transition-colors hover:border-ember/60 hover:bg-raised"
+    >
+      <span
+        className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-raised font-display text-xs text-ember"
+        style={image ? undefined : { background: fallbackCover(passenger.name) }}
+      >
+        {image ? (
+          <img src={image} alt="" className="h-full w-full object-cover" draggable={false} />
+        ) : (
+          passenger.name.charAt(0).toUpperCase()
+        )}
+      </span>
+      {passenger.name}
+    </button>
+  );
+}
+
+function PassengerDrawer({
+  passenger,
+  onClose,
+  onOpenProfile,
+}: {
+  passenger: PlayerCharacter;
+  onClose: () => void;
+  onOpenProfile: () => void;
+}) {
+  const image = useStoredImage(passenger.image);
+  const conditions = parseTags(passenger.conditions);
+  return (
+    <div
+      className="absolute inset-0 z-40 flex justify-end bg-black/40"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <div className="h-full w-[440px] overflow-y-auto border-l border-line-strong bg-panel shadow-[var(--shadow-lift)] pf-modal-in">
+        <div className="flex items-center justify-between border-b border-line px-5 py-3.5">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.16em] text-ember">Passenger</div>
+            <h2 className="font-display text-lg text-ink">{passenger.name}</h2>
+          </div>
+          <button onClick={onClose} className="text-faint transition-colors hover:text-ink" title="Close">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="px-5 py-5">
+          <div className="flex items-center gap-4">
+            <span
+              className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-raised font-display text-2xl text-ember"
+              style={image ? undefined : { background: fallbackCover(passenger.name) }}
+            >
+              {image ? (
+                <img src={image} alt="" className="h-full w-full object-cover" draggable={false} />
+              ) : (
+                passenger.name.charAt(0).toUpperCase()
+              )}
+            </span>
+            <div>
+              {passenger.concept && <p className="text-sm text-muted">{passenger.concept}</p>}
+              {[passenger.pronouns, passenger.age].some(Boolean) && (
+                <p className="mt-1 text-[12px] text-faint">
+                  {[passenger.pronouns, passenger.age].filter(Boolean).join(" · ")}
+                </p>
+              )}
+              {passenger.player && <p className="mt-1 text-[11px] text-faint">Played by {passenger.player}</p>}
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-line bg-bg-deep/30 p-4">
+            {PC_ATTRIBUTES.map((attribute) => (
+              <div key={attribute.key}>
+                <div className="text-[10px] uppercase tracking-[0.13em] text-faint">{attribute.label}</div>
+                <div className="mt-1.5 flex gap-1" title={attribute.blurb}>
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <span
+                      key={value}
+                      className={`h-2.5 w-2.5 rounded-full border ${
+                        value <= passenger[attribute.key]
+                          ? "border-ember bg-ember"
+                          : "border-line-strong bg-bg-deep"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {conditions.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {PC_CONDITIONS.filter((condition) => conditions.includes(condition.key)).map((condition) => (
+                <span
+                  key={condition.key}
+                  title={condition.meaning}
+                  className="rounded-full border border-ember/35 bg-ember/10 px-2.5 py-1 text-[11px] text-ember"
+                >
+                  {condition.label}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 border-t border-line pt-5">
+            <Markdown text={passenger.overview || "*Their story has not been written here yet.*"} />
+          </div>
+
+          <Button variant="primary" onClick={onOpenProfile} className="mt-6">
+            Open full profile <ChevronRight size={13} />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

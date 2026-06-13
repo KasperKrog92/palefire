@@ -1,6 +1,6 @@
 # Plan — Player Characters ("Passengers")
 
-Status: in progress (steps 1–4 of 8 done)
+Status: complete (steps 1–8 of 8 done)
 Author: planning pass, 2026-06-13
 Progress log:
 - 2026-06-13 — Step 1 done: `migrations/002_player_characters.sql` created (all four
@@ -24,6 +24,26 @@ Progress log:
   `fetchScenes` helper (so `reloadScenes` refreshes entry + passenger links together);
   all three cleared in `clear()`. GM logs remain lazily fetched in the view.
   `npm run typecheck` passes.
+- 2026-06-13 — Step 5 done: added the two-person `Passengers` icon, inserted the
+  section after Archives in the sidebar, and wired the `"passengers"` route in
+  `Shell.tsx`.
+- 2026-06-13 — Step 6 done: added `Passengers.tsx` with a sortable portrait roster,
+  full passenger sheet, live attribute/condition controls, expertise and boarding
+  details, collapsed GM-only notes, structured cross-view connections, "Appears in",
+  lazy per-passenger GM logs, delete cleanup, and the full modal editor. Archives now
+  consumes cross-view focus targets so passenger→Archive links land on the intended
+  entry even when filters were active. `npm run typecheck` passes.
+- 2026-06-13 — Step 7 done: Scene Editor gains portrait cast toggles, Scene Board
+  shows a distinct passenger count, and Live Table renders a warm cast strip plus a
+  player-safe passenger drawer with attributes, active conditions, overview, and an
+  "Open full profile" jump. GM-only fields remain absent from the drawer.
+- 2026-06-13 — Step 8 done: updated `AGENTS.md`, `docs/design.md`, and
+  `docs/development.md`; applied migration 2 to the tracked database and checkpointed
+  it cleanly. Runtime CDP verification covered passenger creation, stat/condition
+  writes, GM-only reveal, GM log add/remove, Archive connection navigation, scene
+  casting, Scene Board count, Live Table drawer privacy, full-profile focus,
+  "Appears in", and cascade cleanup on passenger deletion. Temporary test records
+  were removed. `npm run typecheck` and `npm run build` pass.
 
 ## Goal
 
@@ -413,11 +433,10 @@ Per the `AGENTS.md` workflow, fold these into the implementing commit:
 3. ✅ `repo.ts` — `playerCharacters`, `pcConnections`, `pcLog`; scene↔passenger link
    helpers + `duplicate` copy; hook `archive.remove`.
 4. ✅ `dataStore.ts` (incl. `pcLinks`) + `appStore.ts` (View + focus channel) wiring.
-5. `icons.tsx` Passengers icon; `Shell.tsx` nav + route.
-6. `views/Passengers.tsx` — roster, sheet (incl. "Appears in"), modal editor,
+5. ✅ `icons.tsx` Passengers icon; `Shell.tsx` nav + route.
+6. ✅ `views/Passengers.tsx` — roster, sheet (incl. "Appears in"), modal editor,
    connections picker, GM log.
-7. Scene wiring: `SceneEditor.tsx` cast toggles, `SceneBoard.tsx` cast indicator,
+7. ✅ Scene wiring: `SceneEditor.tsx` cast toggles, `SceneBoard.tsx` cast indicator,
    `LiveTable.tsx` cast strip + profile drawer.
-8. Docs updates; `npm run typecheck`; runtime verification.
+8. ✅ Docs updates; `npm run typecheck`; runtime verification.
 ```
-

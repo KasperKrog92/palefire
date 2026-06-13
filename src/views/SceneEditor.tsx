@@ -7,22 +7,30 @@ import { useData } from "../stores/dataStore";
 import { Modal } from "../components/Modal";
 import { Markdown } from "../components/Markdown";
 import { ImagePicker } from "../components/ImagePicker";
+import { useStoredImage } from "../components/StoredImage";
 import { Button, Field, Input, Select, TextArea } from "../components/ui";
 
 export function SceneEditor({ scene, onClose }: { scene: Scene | null; onClose: () => void }) {
   const { campaign } = useApp();
-  const { presets, entries, reloadScenes } = useData();
+  const { presets, entries, playerCharacters, reloadScenes } = useData();
 
   const [title, setTitle] = useState(scene?.title ?? "");
   const [notes, setNotes] = useState(scene?.notes ?? "");
   const [presetId, setPresetId] = useState<number | null>(scene?.preset_id ?? null);
   const [image, setImage] = useState<string | null>(scene?.background_image ?? null);
   const [linked, setLinked] = useState<Set<number>>(new Set());
+  const [linkedPcs, setLinkedPcs] = useState<Set<number>>(new Set());
   const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     if (scene) {
-      sceneRepo.linkedEntryIds(scene.id).then((ids) => setLinked(new Set(ids)));
+      void Promise.all([
+        sceneRepo.linkedEntryIds(scene.id),
+        sceneRepo.linkedPcIds(scene.id),
+      ]).then(([entryIds, pcIds]) => {
+        setLinked(new Set(entryIds));
+        setLinkedPcs(new Set(pcIds));
+      });
     }
   }, [scene]);
 
@@ -57,6 +65,7 @@ export function SceneEditor({ scene, onClose }: { scene: Scene | null; onClose: 
       });
     }
     await sceneRepo.setLinkedEntries(id, [...linked]);
+    await sceneRepo.setLinkedPcs(id, [...linkedPcs]);
     await reloadScenes();
     onClose();
   };
@@ -171,8 +180,62 @@ export function SceneEditor({ scene, onClose }: { scene: Scene | null; onClose: 
             </div>
           </Field>
         )}
+
+        {playerCharacters.length > 0 && (
+          <Field label="Cast in this scene">
+            <div className="flex max-h-44 flex-wrap gap-2 overflow-y-auto rounded-md border border-line bg-bg-deep/40 px-3 py-3">
+              {playerCharacters.map((passenger) => {
+                const on = linkedPcs.has(passenger.id);
+                return (
+                  <PassengerToggle
+                    key={passenger.id}
+                    name={passenger.name}
+                    image={passenger.image}
+                    active={on}
+                    onClick={() => {
+                      const next = new Set(linkedPcs);
+                      if (on) next.delete(passenger.id);
+                      else next.add(passenger.id);
+                      setLinkedPcs(next);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </Field>
+        )}
       </div>
     </Modal>
+  );
+}
+
+function PassengerToggle({
+  name,
+  image,
+  active,
+  onClick,
+}: {
+  name: string;
+  image: string | null;
+  active: boolean;
+  onClick: () => void;
+}) {
+  const url = useStoredImage(image);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-2 rounded-full border py-1 pl-1 pr-3 text-[12px] transition-colors ${
+        active
+          ? "border-ember/50 bg-ember/15 text-ember"
+          : "border-line bg-raised text-muted hover:border-line-strong hover:text-ink"
+      }`}
+    >
+      <span className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-bg-deep font-display text-[10px]">
+        {url ? <img src={url} alt="" className="h-full w-full object-cover" /> : name.charAt(0).toUpperCase()}
+      </span>
+      {name}
+    </button>
   );
 }
 

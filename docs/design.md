@@ -6,8 +6,27 @@ Palefire is a local-first Windows tool for tabletop game masters. It favors a ha
 
 - Make the app dependable and calm during a live tabletop session.
 - Keep scene navigation, notes, and atmosphere controls close at hand.
+- Treat player characters as first-class **Passengers**, distinct from the Archives
+  that hold NPCs, locations, factions, and notes.
 - Prefer focused workflows over broad configuration surfaces.
 - Store the campaign locally and make ownership of its files obvious.
+
+## Passengers
+
+Passenger sheets are GM aids, not a rules engine. They may hold identity, portrait,
+boarding prompts, narrative overview, structured campaign connections, scene
+presence, private GM notes, and a per-passenger log. Every field is optional; an
+unfinished sheet remains useful at the table.
+
+The fixed Night Ferry register uses four attributes rated 1–5: **Body**, **Wits**,
+**Heart**, and **Resolve**. Conditions are split between what the body gives
+(**Chilled**, **Hurt**, **Spent**) and what the nerve gives (**Shaken**, **Adrift**,
+**Haunted**). A full track means the passenger is **Overcome**. These values are
+displayed and edited as quiet table-state reminders; Palefire does not roll dice or
+derive additional mechanics from them.
+
+Live Table passenger summaries must remain safe to show players. GM-only secrets and
+what the ferry may need belong only behind the collapsed curtain on the full sheet.
 
 ## Voice and mood
 
@@ -21,6 +40,6 @@ wordmark as a dark silhouette for contrast without changing the source artwork.
 
 ## Applying this guidance
 
-When choosing between features or layouts, bias toward live-session usability and low cognitive load. New work should feel native to the existing scene board, archives, atmosphere mixer, Live Table, and logbook rather than introducing a separate product metaphor.
+When choosing between features or layouts, bias toward live-session usability and low cognitive load. New work should feel native to the existing scene board, archives, passengers, atmosphere mixer, Live Table, and logbook rather than introducing a separate product metaphor.
 
 Optional artwork guidance lives in [`visuals.md`](visuals.md).

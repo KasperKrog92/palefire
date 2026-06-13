@@ -17,6 +17,7 @@ type Filter = ArchiveCategory | "all";
 
 export function Archives() {
   const { entries, links, scenes } = useData();
+  const { pendingFocus, clearFocus } = useApp();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -39,13 +40,24 @@ export function Archives() {
   const selected = entries.find((e) => e.id === selectedId) ?? null;
 
   useEffect(() => {
+    if (pendingFocus?.view !== "archives") return;
+    if (entries.some((entry) => entry.id === pendingFocus.id)) {
+      setFilter("all");
+      setQuery("");
+      setSelectedId(pendingFocus.id);
+    }
+    clearFocus();
+  }, [pendingFocus, entries, clearFocus]);
+
+  useEffect(() => {
+    if (pendingFocus?.view === "archives") return;
     if (filtered.length > 0 && !filtered.some((e) => e.id === selectedId)) {
       setSelectedId(filtered[0].id);
     } else if (filtered.length === 0) {
       setSelectedId(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtered]);
+  }, [filtered, pendingFocus]);
 
   const linkedScenes = useMemo(() => {
     if (!selected) return [];

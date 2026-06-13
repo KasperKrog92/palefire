@@ -1,9 +1,19 @@
 import type { ReactNode } from "react";
 import { useApp, type View } from "../stores/appStore";
-import { Book, Cards, ChevronLeft, Gear, Lantern, Log, Waves } from "../components/icons";
+import {
+  Book,
+  Cards,
+  ChevronLeft,
+  Gear,
+  Lantern,
+  Log,
+  Passengers as PassengersIcon,
+  Waves,
+} from "../components/icons";
 import { NowPlayingDock } from "./NowPlayingDock";
 import { SceneBoard } from "../views/SceneBoard";
 import { Archives } from "../views/Archives";
+import { Passengers } from "../views/Passengers";
 import { Atmosphere } from "../views/Atmosphere";
 import { LiveTable } from "../views/LiveTable";
 import { Logbook } from "../views/Logbook";
@@ -13,6 +23,7 @@ import palefireLogo from "../assets/palefire-logo.png";
 const NAV: { view: View; label: string; icon: ReactNode }[] = [
   { view: "scenes", label: "Scene Board", icon: <Cards size={16} /> },
   { view: "archives", label: "Archives", icon: <Book size={16} /> },
+  { view: "passengers", label: "Passengers", icon: <PassengersIcon size={16} /> },
   { view: "atmosphere", label: "Atmosphere", icon: <Waves size={16} /> },
   { view: "live", label: "Live Table", icon: <Lantern size={16} /> },
   { view: "logbook", label: "Logbook", icon: <Log size={16} /> },
@@ -71,6 +82,7 @@ export function Shell() {
       <main className="relative flex-1 overflow-hidden bg-bg">
         {view === "scenes" && <SceneBoard />}
         {view === "archives" && <Archives />}
+        {view === "passengers" && <Passengers />}
         {view === "atmosphere" && <Atmosphere />}
         {view === "live" && <LiveTable />}
         {view === "logbook" && <Logbook />}

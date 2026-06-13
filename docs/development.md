@@ -19,6 +19,9 @@ Rust stable with the MSVC toolchain and Visual Studio 2022 Build Tools are requi
 $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
 ```
 
+For normal local use, double-click `Start Palefire.cmd` at the repository root. It
+sets Cargo on `PATH`, enables the WebView2 debugging port, and runs `npm run tauri dev`.
+
 `Cargo.lock` pins `time = 0.3.47` because `time = 0.3.48` conflicts with `cookie = 0.18.1`. Do not update it until the upstream dependency chain is fixed.
 
 ## Repository data
@@ -66,6 +69,27 @@ two PCs. Pull before a session and push after it rather than running divergent c
 
 - `lib.rs` normalizes CRLF to LF before registering migrations.
 - `.gitattributes` declares `*.sql text eol=lf`.
+
+Migration `002_player_characters.sql` adds the passenger system:
+
+- `player_characters` stores identity, portrait, fixed attributes, conditions,
+  boarding prompts, narrative notes, GM-only fields, and roster order.
+- `pc_connections` stores ordered polymorphic links from a passenger to either an
+  Archive entry or another passenger.
+- `pc_log_entries` stores the passenger-scoped GM log.
+- `scene_pc_links` connects passengers to scenes alongside `scene_entry_links`.
+
+`pc_connections.target_kind` + `target_id` cannot use a single foreign key. Deleting
+an Archive entry must explicitly remove matching `('archive', id)` rows. Deleting a
+passenger must remove both its own rows and inbound `('pc', id)` rows. These cleanup
+rules live in `src/db/repo.ts`; normal passenger-owned logs and scene links cascade.
+
+## Cross-view focus
+
+`appStore.ts` carries a one-shot `pendingFocus` target. `focus(view, id)` changes the
+sidebar view and asks the destination to select a specific record; the destination
+must consume and clear the target. Archives and Passengers use this for structured
+connection navigation, and Live Table uses it for "Open full profile".
 
 ## Runtime verification
 
