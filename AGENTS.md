@@ -26,6 +26,11 @@ Local-first Windows desktop app for tabletop GMs (Tauri v2 + React 19 + TS + Tai
 
 The app's voice is quiet and literary (see seed content and empty states). The palette and fonts live in `src/styles.css`. Prefer calm, low-stress UI over feature density; this is a tool used live at a game table.
 
+## Model delegation
+
+- You may delegate a task to a smaller model (Sonnet or Haiku) via a subagent when you judge the task simple enough to handle reliably - e.g. mechanical edits, narrow lookups, or well-specified single-file changes.
+- When unsure whether a task is simple enough, do not delegate: keep it on the Opus or Fable model.
+
 ## Documentation memory
 
 - `docs/design.md` holds durable product and design intent.
